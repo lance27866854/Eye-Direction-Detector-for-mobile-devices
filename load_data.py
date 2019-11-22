@@ -1,9 +1,11 @@
 import string
 import numpy as np
+from preprocessing import Video
 
-def get_shape(file_name):
+def get_shape(path):
+    print(path)
     # -------- loading ------- #
-    file = open(file_name+'_info.txt', 'r')
+    file = open(path+'_info.txt', 'r')
     contents = file.readline()
     file.close()
     shape = []
@@ -30,5 +32,17 @@ def load_data(path):
     #shape = get_shape(file_name_te)
     #teX = np.load(file_name_te)
     #teY = [1]
+    return trX, trY, teX, teY, shape
 
-    return trX, trY, teX, teY
+def point_convertor(dir, store):
+    trX, trY, teX, teY, shape = load_data(dir)
+    region_cet = [] # shape : [# of points, 4]
+    for i in range(1): # len(trX) -> all
+        print("Processing the "+str(i)+"-th video...")
+        v = Video(trX[1], trY[1], 1)
+        v.get_candidate_regions(region_cet) # shape : [num_points, 4]
+
+    data = np.array(region_cet)
+    if store == True:
+        np.save("tool/dataset/data_points.npy", data)
+    return data, trX, shape

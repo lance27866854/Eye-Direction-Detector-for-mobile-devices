@@ -25,5 +25,5 @@ def gradient_generator(G1, G2, G3):
 '''
 # TODO:
 - try gray-scale images.
-
+- shuffle regions in train() function.
 '''
