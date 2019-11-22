@@ -1,132 +1,86 @@
-import numpy as np
+# -*- coding: utf-8 -*-
+
 import tensorflow as tf
+FLAGS = tf.app.flags.FLAGS
 
-from tensorflow.python.ops.nn import dynamic_rnn
-from tensorflow.contrib.seq2seq.python.ops.loss import sequence_loss
-from tensorflow.contrib.lookup.lookup_ops import MutableHashTable
-from tensorflow.contrib.layers.python.layers import layers
-from tensorflow.contrib.session_bundle import exporter
+############################
+#         Parameters       #
+############################
+W_1 = 100
+H_1 = 50
+W_2 = 120
+H_2 = 60
+W_3 = 140
+H_3 = 70
 
-from rnn_cell import GRUCell, BasicLSTMCell, MultiRNNCell, BasicRNNCell
+############################
+#           Layers         #
+############################
+def layer(x, reuse):
+    conv1_1 = tf.layers.conv2d(x, 1, 5, padding='same', reuse=reuse)
+    pool1_1 = tf.layers.max_pooling2d(input=conv1_1, pool_size=3, strides=2, padding='valid')
+    conv1_2 = tf.layers.conv2d(pool1_1, 1, 3, padding='same', reuse=reuse)
+    conv1_3 = tf.layers.conv2d(conv1_2, 1, 3, padding='same', reuse=reuse)
+    pool1_3 = tf.layers.max_pooling2d(input=conv1_3, pool_size=3, strides=2, padding='valid')
+    fc = tf.contrib.layers.flatten(pool1_3)
+    logits = tf.layers.dense(fc, 2)
+    return logits
 
+def predict(logit, y):
+    loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=y, logits=logit))
+    pred = tf.argmax(logits, 1)
+    correct_pred = tf.equal(tf.cast(pred, tf.int32), y)
+    acc = tf.reduce_mean(tf.cast(correct_pred, tf.float32))
+    return loss, pred, acc
 
-PAD_ID = 0
-UNK_ID = 1
-_START_VOCAB = ['_PAD', '_UNK']
-
-class RNN(object):
+class Model:
     def __init__(self,
-            num_symbols,
-            num_embed_units, # 300
-            num_units, # 512
-            num_layers, # 1
-            num_labels, # 5
-            embed,
-            learning_rate=0.005,
-            max_gradient_norm=5.0,
-			param_da=150,
-			param_r=10):
-        
-        self.texts = tf.placeholder(tf.string, (None, None), 'texts')  # shape: [batch, length]
+                 learning_rate=0.4,
+                 learning_rate_decay_factor=0.99):
+        self.x_1 = tf.placeholder(tf.float32, [None, W_1, H_1, 3])
+        self.x_2 = tf.placeholder(tf.float32, [None, W_2, H_2, 3])
+        self.x_3 = tf.placeholder(tf.float32, [None, W_3, H_3, 3])
+        self.y = tf.placeholder(tf.int32, [None])
 
-        #todo: implement placeholders
-        self.texts_length = tf.placeholder(tf.int64, (None,), 'texts_length')  # shape: [batch]
-        self.labels = tf.placeholder(tf.int64, (None,), 'labels')  # shape: [batch]
-        
-        self.symbol2index = MutableHashTable(
-                key_dtype=tf.string,
-                value_dtype=tf.int64,
-                default_value=UNK_ID, #shared_name="in_table", # RE
-                name="in_table",
-                checkpoint=True)
+        self.loss, self.pred, self.acc = self.forward(is_train=True)
 
-        batch_size = tf.shape(self.texts)[0]
-        length = tf.shape(self.texts)[1]
-        # build the vocab table (string to index)
-        # initialize the training process
         self.learning_rate = tf.Variable(float(learning_rate), trainable=False, dtype=tf.float32)
+        self.learning_rate_decay_op = self.learning_rate.assign(self.learning_rate * learning_rate_decay_factor)
+
         self.global_step = tf.Variable(0, trainable=False)
-
-        self.index_input = self.symbol2index.lookup(self.texts)   # shape: [batch, length]
-        
-        # build the embedding table (index to vector)
-        if embed is None:
-            # initialize the embedding randomly
-            self.embed = tf.get_variable('embed', [num_symbols, num_embed_units], tf.float32)
-        else:
-            # initialize the embedding by pre-trained word vectors
-            self.embed = tf.get_variable('embed', dtype=tf.float32, initializer=embed)
-
-        #todo: implement embedding inputs
-        self.embed_input = tf.nn.embedding_lookup(self.embed, self.index_input) #shape: [batch, length, num_embed_units]
-
-        #todo: implement 3 RNNCells (BasicRNNCell, GRUCell, BasicLSTMCell) in a multi-layer setting with #num_units neurons and #num_layers layers
-        layer_list = [] # STEP&
-        for l in range(num_layers):
-            layer_list.append(GRUCell(num_units))
-
-        cell_fw = MultiRNNCell(layer_list)
-        cell_bw = MultiRNNCell(layer_list)
-
-        #todo: implement bidirectional RNN
-        outputs, states = tf.nn.bidirectional_dynamic_rnn(cell_fw, cell_bw, self.embed_input, sequence_length=None, dtype=tf.float32, scope="rnn")
-        
-        H = tf.concat(outputs, 2) # shape: (batch, length, 2*num_units) ?*?*1024 ->>forward and backward
-        with tf.variable_scope('logits'):
-            #todo: implement self-attention mechanism, feel free to add codes to calculate temporary results
-            Ws1 = tf.get_variable("Ws1", [2*num_units, param_da]) # 1024*150
-            Ws2 = tf.get_variable("Ws2", [param_da, param_r]) # 150*10
-
-            temp1 = tf.tanh(tf.matmul(H, Ws1)) # ?*?*150
-            A = tf.nn.softmax(tf.matmul(temp1, Ws2)) # ?*?*10
-
-            M = tf.matmul(A, H, transpose_a=True) # shape: [batch, param_r, 2*num_units]
-            flatten_M = tf.reshape(M, shape=[batch_size, param_r*2*num_units]) # shape: [batch, param_r*2*num_units]
-
-            logits = tf.layers.dense(flatten_M, num_labels, activation=None, name='projection') # shape: [batch, num_labels]
-        
-        #todo: calculate additional loss, feel free to add codes to calculate temporary results
-        identity = tf.reshape(tf.tile(tf.diag(tf.ones([param_r])), [batch_size, 1]), [batch_size, param_r, param_r])
-        self.penalized_term = tf.reduce_sum(tf.subtract(tf.matmul(A, A, transpose_a=True), identity))
-        '''
-        with tf.variable_scope('logits'):
-            output_fw, output_bw = outputs 
-            f_last_out_vec = tf.transpose(output_fw, perm=[1, 0, 2])[length-1] # shape: (batch, num_units)
-            b_last_out_vec = tf.transpose(output_bw, perm=[1, 0, 2])[length-1] # shape: (batch, num_units)
-            layer = tf.concat([f_last_out_vec, b_last_out_vec], 1) # shape: (batch, 2*num_units)
-            logits = tf.layers.dense(layer, num_labels, activation=None, name='projection') # shape: [batch, num_labels]
-        '''
-        self.loss = tf.reduce_mean(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.labels, logits=logits), name='loss') + 0.0001*self.penalized_term
-        predict_labels = tf.argmax(logits, 1, 'predict_labels')
-        self.accuracy = tf.reduce_sum(tf.cast(tf.equal(self.labels, predict_labels), tf.int32), name='accuracy')
         self.params = tf.trainable_variables()
+        self.update_op = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+
+        #self.saver = tf.train.Saver(tf.global_variables(), write_version=tf.train.SaverDef.V2,
+        #                            max_to_keep=3, pad_step_number=True, keep_checkpoint_every_n_hours=1.0)
+
+    def forward(self, is_train, reuse=tf.AUTO_REUSE):
+        with tf.variable_scope("model", reuse=reuse):
+            # images
+            x1 = tf.reshape(self.x_1, shape=[-1, W_1, H_1, 3])
+            x2 = tf.reshape(self.x_2, shape=[-1, W_2, H_2, 3])
+            x3 = tf.reshape(self.x_3, shape=[-1, W_3, H_3, 3])
+            # build layers
+            logit_1 = layer(x1, reuse)
+            logit_2 = layer(x2, reuse)
+            logit_3 = layer(x3, reuse)
         
-        # Tensorboard 
-        tf.summary.scalar("loss", self.loss)
-        tf.summary.scalar("accuracy", self.accuracy)
-            
-        # calculate the gradient of parameters
-        opt = tf.train.GradientDescentOptimizer(self.learning_rate)
-        gradients = tf.gradients(self.loss, self.params)
-        clipped_gradients, self.gradient_norm = tf.clip_by_global_norm(gradients, 
-                max_gradient_norm)
-        self.update = opt.apply_gradients(zip(clipped_gradients, self.params), 
-                global_step=self.global_step)
+        # loss...
+        loss = [0,0,0]
+        pred = [0,0,0]
+        acc = [0,0,0]
+
+        loss[0], pred[0], acc[0] = predict(logit_1, self.y)
+        loss[1], pred[1], acc[1] = predict(logit_2, self.y)
+        loss[2], pred[2], acc[2] = predict(logit_3, self.y)
         
-        self.saver = tf.train.Saver(write_version=tf.train.SaverDef.V2, 
-                max_to_keep=5, pad_step_number=True)
-
-    def print_parameters(self):
-        for item in self.params:
-            print('%s: %s' % (item.name, item.get_shape()))
-    
-    def train_step(self, session, data, merged_summary_op):
-        input_feed = {self.texts: data['texts'],
-                self.texts_length: data['texts_length'],
-                self.labels: data['labels']}
-        output_feed = [self.loss, self.accuracy, self.gradient_norm, self.update]
-
-        # Tensorboard
-        summary=session.run(merged_summary_op, input_feed)
-
-        return session.run(output_feed, input_feed), summary
+        #Tensorboard
+        '''
+        if(is_train == True):
+            tf.summary.scalar("train_loss", loss)
+            tf.summary.scalar("train_accuracy", acc)
+        else:
+            tf.summary.scalar("val_loss", loss)
+            tf.summary.scalar("val_accuracy", acc)
+        '''
+        return loss, pred, acc # shape: [3], [3], [3]

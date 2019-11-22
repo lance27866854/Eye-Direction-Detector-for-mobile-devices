@@ -8,7 +8,7 @@ import cv2
 BATCH_NUM = 0
 FILE_LOCATION = 'dataset\\'
 FILE_TYPE = '.npy'
-WRITE = False
+WRITE = True
 
 # tool functions
 def show_plot(frame, left_rect, right_rect):
@@ -23,7 +23,7 @@ def show_plot(frame, left_rect, right_rect):
 def random_show_all(loaders, data):
     for i in range(len(data)):
         fi = random.randrange(len(data[i]))
-        frame = video[fi]
+        frame = data[i][fi]
         left_rect = loaders[i][0] # [x, y, width, height]
         right_rect =  loaders[i][1] # [x, y, width, height]
         show_plot(frame, left_rect, right_rect)
@@ -38,7 +38,8 @@ def random_show(loaders, data, i):
 
 # Loader
 # loader.shape = [number of videos, 2, 4]
-loaders = [[[153, 367, 80, 30], [303, 357, 80, 30]]]
+loaders = [[[153.0, 367.0, 80.0, 30.0], [303.0, 357.0, 80.0, 30.0]],
+           [[99.0, 367.0, 115.0, 50.0], [335.0, 357.0, 110.0, 50.0]]]
 
 # process data
 if WRITE == True:
@@ -47,5 +48,6 @@ if WRITE == True:
 else: 
     data = np.load(FILE_LOCATION+'batch'+str(BATCH_NUM)+FILE_TYPE)
     # take one random frame from the i-th video.
-    random_show(loaders, data, 0)
-    #random_show_all(loaders, data)
+    #random_show(loaders, data, 1)
+    # take one random frame from all the videos.
+    random_show_all(loaders, data)

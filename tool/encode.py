@@ -4,11 +4,20 @@ import numpy as np
 import string
 import os
 
+# 0->no movement, 1->up, 2->right, 3->down, 4->left
+# answer encoder
+NO = 0
+UP = 1
+RIGHT = 2
+DOWN = 3
+LEFT = 4
+
 # PARAMETERS
 FILE_NUM = 2
 BATCH_NUM = 0
-FILE_LOCATION = 'C:\\Users\\user\\Desktop\\tool\\sources\\'
+FILE_LOCATION = 'C:\\Users\\user\\Desktop\\model\\tool\\sources\\'
 FILE_TYPE = '.mp4'
+ANSWER = [LEFT, LEFT]
 
 # tool functions
 def write_array(loaders, file_name):
@@ -57,7 +66,9 @@ for i in range(FILE_NUM):
         if os.path.isdir("dataset") == False:
             os.mkdir("dataset")
         file = open('dataset/batch'+str(BATCH_NUM)+'_info.txt', 'w')
-        file.write('{:d} {:d} {:d} {:d}'.format(FILE_NUM, height, width, 3))
+        file.write('{:d} {:d} {:d} {:d}\n'.format(FILE_NUM, height, width, 3))
+        for elements in ANSWER:
+            file.write('{:d}\n'.format(elements))
         file.close()
     
     # Read video and store it in loader.

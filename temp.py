@@ -21,3 +21,9 @@ def gradient_generator(G1, G2, G3):
                 
     candidate_list = sorted(candidate_list, key = lambda x : x[0], reverse=True)
     return candidate_list
+
+'''
+# TODO:
+- try gray-scale images.
+
+'''

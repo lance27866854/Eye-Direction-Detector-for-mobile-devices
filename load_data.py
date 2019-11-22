@@ -10,7 +10,7 @@ def get_shape(file_name):
     for size in contents.split():
         size = size.strip(string.whitespace)
         shape.append(int(size))
-    return shape
+    return shape[0], shape[1], shape[2]
 
 def load_data(path):
     print('Creating dataset...')
@@ -20,7 +20,7 @@ def load_data(path):
     teX = None
     teY = None
 
-    for batch_id in range(1):
+    for batch_id in range(1): # batch size
         file_name_tr = path+'/batch'+str(batch_id)
         shape = get_shape(file_name_tr)
         trX = np.load(file_name_tr+'.npy', allow_pickle=True)

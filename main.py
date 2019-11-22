@@ -6,44 +6,85 @@ import numpy as np
 import sys
 import os
 import random
-random.seed(1229)
+random.seed(5487)
 
-from load_data import load_data
+from load_data import load_data, get_shape
 from preprocessing import Video
+
+
+############################
+#         Parameters       #
+############################
+# ------ kernel size ----- #
+W_1 = 100
+H_1 = 50
+W_2 = 120
+H_2 = 60
+W_3 = 140
+H_3 = 70
+# ------- video size ----- #
+NUM_V = 0
+HEIGHT = 0
+WIDTH = 0
 
 ############################
 #           Flags          #
 ############################
 tf.app.flags.DEFINE_boolean("is_train", True, "Set to False to inference.")
-tf.app.flags.DEFINE_integer("symbols", 18430, "vocabulary size.")
-tf.app.flags.DEFINE_integer("labels", 5, "Number of labels.")
 tf.app.flags.DEFINE_float("learning_rate", 0.005, "learning rate.")
-tf.app.flags.DEFINE_integer("epoch", 50, "Number of epoch.")
-tf.app.flags.DEFINE_integer("units", 512, "Size of each model layer.")
-tf.app.flags.DEFINE_integer("layers", 1, "Number of layers in the model.")
-tf.app.flags.DEFINE_integer("batch_size", 16, "Batch size to use during training.")
-tf.app.flags.DEFINE_string("data_dir", "./dataset", "Data directory")
-tf.app.flags.DEFINE_string("train_dir", "./train", "Training directory.")
+tf.app.flags.DEFINE_integer("epoch", 10, "Number of epoch.")
+tf.app.flags.DEFINE_integer("batch_size", 2, "Number of batches(videos).")
+tf.app.flags.DEFINE_string("data_dir", "./tool/dataset", "Data directory")
 tf.app.flags.DEFINE_integer("per_checkpoint", 1000, "How many steps to do per checkpoint.")
 tf.app.flags.DEFINE_integer("inference_version", 0, "The version for inferencing.")
 tf.app.flags.DEFINE_boolean("log_parameters", True, "Set to True to show the parameters")
 FLAGS = tf.app.flags.FLAGS
 
-
 ############################
 #         Functions        #
 ############################
-def train(model, sess, dataset):
-    st, ed, loss, accuracy = 0, 0, .0, .0
-    while ed < len(dataset):
-        st, ed = ed, ed+FLAGS.batch_size if ed+FLAGS.batch_size < len(dataset) else len(dataset)
-        batch_data = gen_batch_data(dataset[st:ed])
-        outputs, summary = model.train_step(sess, batch_data, merged_summary_op) # Tensorboard
-        loss += outputs[0]
-        accuracy += outputs[1]
+def get_input(center_in, center_idx, i, trX):
+    in_Y_cut, in_X_cut = center_in[0], center_in[1]
+    
+    st_Y_1 = in_Y_cut-H_1/2 if in_Y_cut>=H_1/2 else 0
+    ed_Y_1 = in_Y_cut+H_1/2 if in_Y_cut+H_1/2<=HEIGHT else HEIGHT
+    st_Y_2 = in_Y_cut-H_2/2 if in_Y_cut>=H_2/2 else 0
+    ed_Y_2 = in_Y_cut+H_2/2 if in_Y_cut+H_2/2<=HEIGHT else HEIGHT
+    st_Y_3 = in_Y_cut-H_3/2 if in_Y_cut>=H_3/2 else 0
+    ed_Y_3 = in_Y_cut+H_3/2 if in_Y_cut+H_3/2<=HEIGHT else HEIGHT
 
-    return loss / len(dataset), accuracy / len(dataset)
+    st_X_1 = in_X_cut-W_1/2 if in_X_cut>=W_1/2 else 0
+    ed_X_1 = in_X_cut+W_1/2 if in_X_cut+W_1/2<=WIDTH else WIDTH
+    st_X_2 = in_X_cut-W_2/2 if in_X_cut>=W_2/2 else 0
+    ed_X_2 = in_X_cut+W_2/2 if in_X_cut+W_2/2<=WIDTH else WIDTH
+    st_X_3 = in_X_cut-W_3/2 if in_X_cut>=W_3/2 else 0
+    ed_X_3 = in_X_cut+W_3/2 if in_X_cut+W_3/2<=WIDTH else WIDTH
+    
+    return trX[center_idx][i][st_Y_1:ed_Y_1][st_X_1:ed_X_1], trX[center_idx][i][st_Y_2:ed_Y_2][st_X_2:ed_X_2], trX[center_idx][i][st_Y_3:ed_Y_3][st_X_3:ed_X_3]
 
+def train(model, sess, region_points, trX):
+    loss, acc = 0.0, 0.0
+    st, ed, times = 0, FLAGS.batch_size, 0
+    # for every batch
+    while st < len(region_points) and ed <= len(region_points):
+        regions, labels = region_points[st:ed][0], region_points[st:ed][1]
+
+        for i in len(regions):
+            if len(regions[i]) == 0:
+                continue
+            center_in, center_gt, center_idx = regions[i][0], regions[i][1], regions[i][2] # shape : 2, 1, 1
+            in_1, in_2, in_3 = get_input(center_in, center_idx, i, trX)
+            feed = {model.x_1: in_1, model.x_2: in_2, model.x_3: in_3, model.y: center_gt}
+            loss_, acc_, _ = sess.run([model.loss, model.acc, model.train_op], feed_dict=feed)
+            loss += loss_
+            acc += acc_
+            # renew
+            st, ed = ed, ed+FLAGS.batch_size
+            times += 1
+
+    loss /= times
+    acc /= times
+    return acc, loss
 
 ############################
 #           Main           #
@@ -57,69 +98,36 @@ config.gpu_options.allow_growth = True
 with tf.Session(config=config) as sess:
 
     if FLAGS.is_train:
-        #print(FLAGS.__flags)
         trX, trY, teX, teY = load_data(FLAGS.data_dir)
+        NUM_V, HEIGHT, WIDTH = get_shape(FLAGS.data_dir)
         region_cet = [] # shape : [# of video in batch, frames, # of points, 2]
-        for i in range(len(trX)):
-            v = Video(trX[i], trY[i])
+        for i in range(len(trX)): # len(trX) -> all
+            v = Video(trX[i], trY[i], i)
             region_points = v.get_candidate_regions() # shape : [frames, num_points, 2] -> n frame
-            region_cet.append(region_points)
-        
+            region_cet.append(region_points) # shape : [# of videos, frames, num_points, 2]
+            print(region_points)
+
+        # build comp graph.
         cnn_model = Model()
-        
         if FLAGS.log_parameters:
             model.print_parameters()
+        tf.global_variables_initializer().run()
+
+        # init some parameters
+        pre_losses = [1e18] * 3
+        best_val_acc = 0.0
+
+        for epoch in range(FLAGS.epoch):
+            # training
+            start_time = time.time()
+            train_acc, train_loss = train(cnn_model, sess, region_points, trX)
+            epoch_time = time.time() - start_time
+            print("Epoch " + str(epoch + 1) + " of " + str(FLAGS.epoch) + " took " + str(epoch_time) + "s")
+            print("  learning rate:                 " + str(cnn_model.learning_rate.eval()))
+            print("  training loss:                 " + str(train_loss))
+            print("  training accuracy:             " + str(train_acc))
+
+            if train_loss > max(pre_losses):
+                sess.run(cnn_model.learning_rate_decay_op)
+            pre_losses = pre_losses[1:] + [train_loss]
         
-        if tf.train.get_checkpoint_state(FLAGS.train_dir):
-            print("Reading model parameters from %s" % FLAGS.train_dir)
-            model.saver.restore(sess, tf.train.latest_checkpoint(FLAGS.train_dir))
-
-        else:
-            print("Created model with fresh parameters.")
-            tf.global_variables_initializer().run()
-            op_in = model.symbol2index.insert(constant_op.constant(vocab),
-                constant_op.constant(list(range(FLAGS.symbols)), dtype=tf.int64))
-            sess.run(op_in)
-              
-        for epoch in list(range(FLAGS.epoch)):
-            # TODO: shuffle: random.shuffle(data_train)
-            loss_t, accuracy_t = train(model, sess, data_train)
-            documant_losses(train_dic, loss_t, accuracy_t, epoch)
-            print("epoch %d learning rate %.4f epoch-time %.4f loss %.8f accuracy [%.8f]" % (epoch, model.learning_rate.eval(), time.time()-start_time, loss_t, accuracy_t))
-            
-            loss_v, accuracy_v = evaluate(model, sess, data_dev, epoch, merged_summary_op) # Tensorboard
-            documant_losses(val_dic, loss_v, accuracy_v, epoch)
-            print("        dev_set, loss %.8f, accuracy [%.8f]" % (loss_v, accuracy_v))
-
-    else:
-        data_dev = load_data(FLAGS.data_dir, 'dev.txt')
-        data_test = load_data(FLAGS.data_dir, 'test.txt')
-
-        model = RNN(
-                FLAGS.symbols, 
-                FLAGS.embed_units,
-                FLAGS.units, 
-                FLAGS.layers,
-                FLAGS.labels,
-                embed=None)
-
-        if FLAGS.inference_version == 0:
-            model_path = tf.train.latest_checkpoint(FLAGS.train_dir)
-        else:
-            model_path = '%s/checkpoint-%08d' % (FLAGS.train_dir, FLAGS.inference_version)
-        print('restore from %s' % model_path)
-        model.saver.restore(sess, model_path)
-
-        # RE
-        loss, accuracy = evaluate(model, sess, data_dev, -1, None) # PLOT
-        print("        dev_set, loss %.8f, accuracy [%.8f]" % (loss, accuracy))
-
-        inference(model, sess, data_test)
-
-        print("        test_set, write inference results to result.txt")
-        
-        # write info...
-        if os.path.isdir("loss_info") == False:
-            os.mkdir("loss_info")
-        file = open('loss_info/val_info.txt', 'a')
-        file.write('Val Accuracy = {:.8f}\n    Val Loss = {:.8f}\n'.format(accuracy, loss))
