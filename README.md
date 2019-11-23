@@ -18,3 +18,13 @@
 
 ### :point_right: 本周计画：
 11/22 23:59 前出 5 个 batch -> 一个 batch 需有 20 支影片，这周先搜集基本款(NO occlussion、NO glasses)。
+
+---
+
+## 算法瓶緊
+我們的 model 遇到以下瓶緊：
+1. Rubustness需要加強，有些 frame 會找不到眼睛位置。
+2. 做不到 Realtime，看有沒有更快的算法可以支持眼睛位置的框取。
+
+### :point_right: 本周计画：
+11/29 23:59 做出算法改良初步想法，繼續蒐集數據(another 100 videos)，預計再下周會進到實驗階段，到時候就是做hyperparameter search and structure search。
