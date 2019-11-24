@@ -46,3 +46,4 @@
 11/29 23:59 做出算法改良初步想法，继续搜集数据(another 200 videos)，预计再下周会进到实验阶段，到时候就是做hyperparameter search and structure search。
 1. (1人) 专门搜集 dataset，务必确认 dataset 质量，也可以参考别人的论文如何搜集。
 2. (1人) 看 paper，专门研究 region 算法(需要下周小小报告一下)，看能不能用上。
+3. NOTE: 做搜集dataset 的人可以自由修改eye_region.py、encode.py，但请固定格式，必须提供接口(video 数量、长、宽、video 存储方式、眼睛位置存储)，我认为可以存的干净一点，目前有点乱。
