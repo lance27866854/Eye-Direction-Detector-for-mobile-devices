@@ -21,10 +21,28 @@
 
 ---
 
-## 算法瓶緊
-我們的 model 遇到以下瓶緊：
-1. Rubustness需要加強，有些 frame 會找不到眼睛位置。
-2. 做不到 Realtime，看有沒有更快的算法可以支持眼睛位置的框取。
+## 目前进度(~11/24)
+已经写好CNN分类器，可以从 candidate regions 找出眼睛位置并分类，总结一下算法以及对应的function：
+1. 首先是我们的档案架构：/First/放的是 cascaded 架构中的前半部分；/Second/ 是后半部分。
+2. 前半部分当中，在启动 model 上分为 4 种模式：
+```
+# Mode 0: Training and also store the data points (usually for the first time).
+(Mode 0 启动后，会先跑 Gaussian Kernel 卷积，用 sobel Kernel 找点(candidate_points)，并用进行训练。)
+# Mode 1: Training but use stored data points (usually for the second time).
+(Mode 1 启动后，会从档案中抓取预先存好的点(candidate_points)，并用进行训练。)
+# Mode 2: Testing for checking the accuracy (usually for the first time).
+(Mode 2 启动后，进行 Testing，此时要填入相对应的 inference version。)
+# Mode 3: Testing for generate data for the cascaded network (usually for the second time).
+(Mode 3 启动后，会先跑进行 Testing，并存储预测的眼睛位置。(这先不用管，应该是后期会需要用的。))
+```
+3. RNN 应该是会用左右眼的图像进行 Training，目前想到可以尝试的方向是双眼图像输入。
+
+## 算法瓶紧
+我们的 model 遇到以下瓶紧：
+1. Rubustness需要加强，有些 frame 会找不到眼睛位置。
+2. 做不到 Realtime，看有没有更快的算法可以支持眼睛位置的框取。
 
 ### :point_right: 本周计画：
-11/29 23:59 做出算法改良初步想法，繼續蒐集數據(another 100 videos)，預計再下周會進到實驗階段，到時候就是做hyperparameter search and structure search。
+11/29 23:59 做出算法改良初步想法，继续搜集数据(another 200 videos)，预计再下周会进到实验阶段，到时候就是做hyperparameter search and structure search。
+(1) 专门搜集 dataset，务必确认 dataset 质量，也可以参考别人的论文如何搜集。
+(2) 看 paper，专门研究 region 算法(需要下周小小报告一下)，看能不能用上。
