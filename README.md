@@ -37,12 +37,12 @@
 ```
 3. RNN 应该是会用左右眼的图像进行 Training，目前想到可以尝试的方向是双眼图像输入。
 
-## 算法瓶紧
+### :point_right: 算法瓶紧
 我们的 model 遇到以下瓶紧：
 1. Rubustness需要加强，有些 frame 会找不到眼睛位置。
 2. 做不到 Realtime，看有没有更快的算法可以支持眼睛位置的框取。
 
 ### :point_right: 本周计画：
 11/29 23:59 做出算法改良初步想法，继续搜集数据(another 200 videos)，预计再下周会进到实验阶段，到时候就是做hyperparameter search and structure search。
-(1) 专门搜集 dataset，务必确认 dataset 质量，也可以参考别人的论文如何搜集。
-(2) 看 paper，专门研究 region 算法(需要下周小小报告一下)，看能不能用上。
+1. (1人) 专门搜集 dataset，务必确认 dataset 质量，也可以参考别人的论文如何搜集。
+2. (1人) 看 paper，专门研究 region 算法(需要下周小小报告一下)，看能不能用上。
