@@ -8,7 +8,7 @@ import cv2
 BATCH_NUM = 0
 FILE_LOCATION = 'dataset\\'
 FILE_TYPE = '.npy'
-WRITE = True
+WRITE = False
 
 # tool functions
 def show_plot(frame, left_rect, right_rect):

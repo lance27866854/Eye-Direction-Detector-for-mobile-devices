@@ -37,7 +37,7 @@ def gradient_generator(G1, G2, G3):
 #           Videos         #
 ############################
 class Video:
-    def __init__(self, video, label_region, video_idx, kernel_SD=[0.3, 0.5, 0.9], num_candidates=200):
+    def __init__(self, video, label_region, video_idx, kernel_SD=[0.3, 0.5, 0.9], num_candidates=150):
         # self.Gaussian_video[0][0].shape == (height, width, 3)
         # self.Gaussian_video == [frames, 3, height, width, 3]
         self.label_region = label_region
@@ -64,14 +64,13 @@ class Video:
         #plt.savefig('img/'+str(idx)+'.png')
         plt.show()
 
-    def get_candidate_regions(self, region_points):
+    def get_candidate_regions(self, region_cet):# shape : [n, 4(2, 1, 1, 1)]
         for i in range(self.frames):
+            print("Processing the "+str(i)+"-th frame...")
             G1 = self.Gaussian_video[i][0] # the first imge in the i-th frame
             G2 = self.Gaussian_video[i][1] # the second imge in the i-th frame
             G3 = self.Gaussian_video[i][2] # the third imge in the i-th frame
             candidate_list = gradient_generator(G1, G2, G3)
-            #print(len(candidate_list))
-            #
             min_num = len(candidate_list) if len(candidate_list) < self.num_candidates else self.num_candidates
             
             # get the center point of the eye.
@@ -81,28 +80,32 @@ class Video:
             right_center_y = self.label_region[1][1]+self.label_region[1][3]/2
 
             # for storing the candidate points...
-            #candidate_point = []
-            min_dis_left = THRESHOLD_LEFT
-            min_dis_right = THRESHOLD_RIGHT
-            min_left_idx = -1
-            min_right_idx = -1
-
             for j in range(min_num):
                 # if we are confident about that this point is the eye center, append it to the list.
                 left_dis = pow(candidate_list[j][1]-left_center_x, 2)+pow(candidate_list[j][2]-left_center_y, 2)
                 right_dis = pow(candidate_list[j][1]-right_center_x, 2)+pow(candidate_list[j][2]-right_center_y, 2)
                 
                 # position of the candidate point
-                if left_dis < min_dis_left:
-                    min_dis_left = left_dis
-                    min_left_idx = j
-                if right_dis < min_dis_right:
-                    min_dis_right = right_dis
-                    min_right_idx = j
+                if left_dis < THRESHOLD_LEFT:
+                    region_cet.append([[candidate_list[j][1], candidate_list[j][2]], 1, self.video_idx, i])
+                elif right_dis < THRESHOLD_RIGHT:
+                    region_cet.append([[candidate_list[j][1], candidate_list[j][2]], 2, self.video_idx, i])
+                else:
+                    region_cet.append([[candidate_list[j][1], candidate_list[j][2]], 0, self.video_idx, i])
+    
+    def get_raw_candidate_regions(self):
+        frame_region = []# shape : [frame, n, 2]
+        for i in range(self.frames):
+            print("Processing the "+str(i)+"-th frame...")
+            G1 = self.Gaussian_video[i][0] # the first imge in the i-th frame
+            G2 = self.Gaussian_video[i][1] # the second imge in the i-th frame
+            G3 = self.Gaussian_video[i][2] # the third imge in the i-th frame
+            candidate_list = gradient_generator(G1, G2, G3)
+            min_num = len(candidate_list) if len(candidate_list) < self.num_candidates else self.num_candidates
+            n_points = []
+            # for storing the candidate points...
+            for j in range(min_num):
+                n_points.append([candidate_list[j][1], candidate_list[j][2]])
+            frame_region.append(n_points)
 
-            if(min_left_idx != -1):
-                region_points.append([[candidate_list[min_left_idx][1], candidate_list[min_left_idx][2]], 0, self.video_idx, i])
-            if(min_right_idx != -1):
-                region_points.append([[candidate_list[min_right_idx][1], candidate_list[min_right_idx][2]], 1, self.video_idx, i])
-        
-        #return region_points # shape : [n (0 or 1 or 2), 4 (2, 1, 1, 1)] -> n points
+        return frame_region
