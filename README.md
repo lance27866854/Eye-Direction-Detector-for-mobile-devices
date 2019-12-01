@@ -49,3 +49,12 @@
 3. NOTE: 做搜集dataset 的人可以自由修改eye_region.py、encode.py，但请固定格式，必须提供接口(video 数量、长、宽、video 存储方式、眼睛位置存储)，我认为可以存的干净一点，目前有点乱。
 
 - 有遮挡、不戴眼镜，尽量短(0.5s)
+
+---
+
+## 目前进度(~12/1)
+
+搭建完畢兩個 network 的雛形，可以 run 了。第一個 net 在第一個 batch 可以達到 85% 正確率。第二個 net 可以達到約 95% 正確率(overfit)。我還是希望我們 dataset 可以 300~500 支影片，約 15~25 batch。
+
+下圖總結我們的算法：
+![](https://i.imgur.com/bryZNEc.png)
