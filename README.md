@@ -54,7 +54,7 @@
 
 ## 目前进度(~12/01)
 
-搭建完毕两个 network 的雏形，可以 run 了。第一个 net 在第一个 batch 可以达到 85% 正确率。第二个 net 可以达到约 95% 正确率(overfit)。我还是希望我们 dataset 可以 300~500 支影片，约 15~25 batch。
+搭建完毕两个 network 的雏形，可以 run 了。第一个 net 在第一个 batch 可以达到 85% 正确率。第二个 net 可以达到约 95% 正确率(overfit)。我还是希望我们 dataset 可以 300\~500 支影片，约 15\~25 batch。
 
 下图总结我们的算法：
 
@@ -64,4 +64,5 @@
 
 ### :point_right: 本周计画：
 
-12/06 23:59 如果忙得话就搜集 data 吧，但我还需要一个人帮我做 structure search、fine tuning parameters(这部分我周一之前会整理出来)。
+12/06 23:59 如果忙得话就搜集 data 吧，但我还需要一个人帮我做 structure search、fine tuning parameters(这部分我周一之前会整理出来)。<br>
+请将 dataset 都转为 first.npy、second.npy。
