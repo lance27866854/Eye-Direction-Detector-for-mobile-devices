@@ -66,3 +66,6 @@
 
 12/06 23:59 如果忙得话就搜集 data 吧，但我还需要一个人帮我做 structure search、fine tuning parameters(这部分我周一之前会整理出来)。<br>
 请将 dataset 都转为 first.npy、second.npy。
+
+## 进度日程表
+![](https://i.imgur.com/ld2yiPG.png)
