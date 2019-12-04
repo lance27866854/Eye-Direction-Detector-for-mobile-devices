@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import tensorflow as tf
 FLAGS = tf.app.flags.FLAGS
 
