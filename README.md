@@ -68,4 +68,4 @@
 请将 dataset 都转为 first.npy、second.npy。
 
 ## 进度日程表
-![](https://i.imgur.com/ld2yiPG.png)
+<img src="https://i.imgur.com/ld2yiPG.png" width="330">
