@@ -63,12 +63,12 @@ def get_First_data(frame, threshold_left=150, threshold_right=150):
 
     return data_1, data_2, data_3, candidate_list
 
-def get_eye(model, sess, data_1, data_2, data_3, candidate_list):
+def get_eye(model, sess, data_1, data_2, data_3, candidate_list, left_default, right_default):
     
     left_max_logit = 0
     right_max_logit = 0
-    left_max_img = None
-    right_max_img = None
+    left_max_img = left_default
+    right_max_img = right_default
     
     length = len(candidate_list)
     for i in range(length):
@@ -90,7 +90,7 @@ def get_eye(model, sess, data_1, data_2, data_3, candidate_list):
         if pred[max_logit] == 2 and logit_value > right_max_logit: # right
             right_max_logit = logit_value
             right_max_img = img[max_logit]
-    
+
     return left_max_img, right_max_img
 
 
@@ -101,3 +101,10 @@ def get_label(model, sess, left_eye, right_eye):
     feed = {model.left: left_eye, model.right: right_eye}
     pred = sess.run([model.pred], feed_dict=feed)
     return pred
+
+############################
+#       For Training       #
+############################
+def to_second_data(path):
+    
+    np.save(path+"/second_data", [left_eyes, right_eyes, gt])

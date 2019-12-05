@@ -18,19 +18,20 @@ REGION_POINTS = [[[ 45, 135], [113, 138]],
 
 # Main
 # Store the vector of videos
-data_editor = Data_Editor(name=NAME, answer=ANSWER, file_num=FILE_NUM, path=PATH)
-data_editor.convert_videos_to_files()
+#data_editor = Data_Editor(name=NAME, answer=ANSWER, file_num=FILE_NUM, path=PATH)
+#data_editor.convert_videos_to_files()
 
 # Show the eye-region and store it as a vector.
 #data_editor.random_show(REGION_POINTS[1], 1)
-data_editor.convert_eye_points_to_files(REGION_POINTS)
+#data_editor.convert_eye_points_to_files(REGION_POINTS)
 
 # ----------------------------------------------- #
 
 # (First) Convert the data to .npy
 data_manager = Data_Manager(path=NAME)
 #data_manager.to_candidate_list()
-data_manager.to_First_data()
+#data_manager.to_First_data()
 
 # (Second) Convert the data to .npy
 #data_manager.to_Second_data(True)
+data_manager.to_Second_plus()

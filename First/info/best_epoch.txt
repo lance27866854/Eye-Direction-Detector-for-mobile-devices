@@ -1,3 +1,0 @@
-Best Epoch    = 100
-Best Accuracy = 0.70616666
--------

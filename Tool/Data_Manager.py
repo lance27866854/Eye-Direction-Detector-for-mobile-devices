@@ -23,7 +23,7 @@ class Data_Manager:
 
     # ------ To candidate list ------ #
     # ENTRY
-    def to_candidate_list(self, kernel_SD=[0.0, 0.5, 0.9], num_candidates=75):
+    def to_candidate_list(self, kernel_SD=[0.0, 0.5, 0.9], num_candidates=200):
         # Get data
         videos = np.load(self.path+'/video.npy', allow_pickle=True)
         region_points = np.load(self.path+'/region_point.npy')
@@ -55,7 +55,7 @@ class Data_Manager:
     # ENTRY
     def to_First_data(self, threshold_left=150, threshold_right=150, HSV_convert=[[0.005, -0.46, -0.54],[0.03, 0.09, 0.45],[0.01, 0.27, -0.38],[-0.04, -0.61, 0.32],[-0.01, 0.6, 0.2]]):
         videos = np.load(self.path+'/video.npy', allow_pickle=True)
-        candidate_list = np.load(self.path+'/candidate_list.npy')
+        candidate_list = np.load(self.path+'/candidate_list.npy', allow_pickle=True)
         region_points = np.load(self.path+'/region_point.npy')
         data_1 = []
         data_2 = []
@@ -249,3 +249,77 @@ class Data_Manager:
         ax.imshow(img)
         plt.title(str(gt))
         plt.show()
+
+    # ------ To cut Regions ------ #
+    # ENTRY
+    # to second plus
+    def to_Second_plus(self, threshold_left=150, threshold_right=150, HSV_convert=[[0.005, -0.46, -0.54],[0.03, 0.09, 0.45],[0.01, 0.27, -0.38],[-0.04, -0.61, 0.32],[-0.01, 0.6, 0.2]]):
+        videos = np.load(self.path+'/video.npy', allow_pickle=True)
+        candidate_list = np.load(self.path+'/candidate_list.npy', allow_pickle=True)
+        region_points = np.load(self.path+'/region_point.npy')
+        ground_truth = np.load(self.path+'/ground_truth.npy')
+
+        left_eyes, right_eyes, gt = [], [], []
+
+        all_=0
+        have=0
+        
+        for i in range(len(videos)):
+            # get the center point of the eye.
+            left_center_X = region_points[i][0][0]
+            left_center_Y = region_points[i][0][1]
+            right_center_X = region_points[i][1][0]
+            right_center_Y = region_points[i][1][1]
+
+            for j in range(len(videos[i])):
+                print("Processing the "+str(j)+"-th frame...")
+                get=False
+                best_left_dis = threshold_left
+                best_right_dis = threshold_right
+                best_left = [np.zeros(shape=(self.H_1, self.W_1, 3), dtype=int), np.zeros(shape=(self.H_2, self.W_2, 3), dtype=int), np.zeros(shape=(self.H_3, self.W_3, 3), dtype=int)]
+                best_right = [np.zeros(shape=(self.H_1, self.W_1, 3), dtype=int), np.zeros(shape=(self.H_2, self.W_2, 3), dtype=int), np.zeros(shape=(self.H_3, self.W_3, 3), dtype=int)]
+                # for storing the candidate points...
+                for k in range(len(candidate_list[i])):
+                    X = candidate_list[i][k][2]
+                    Y = candidate_list[i][k][1]
+
+                    # if we are confident about that this point is the eye center, append it to the list.
+                    left_dis = pow(X-left_center_X, 2)+pow(Y-left_center_Y, 2)
+                    right_dis = pow(X-right_center_X, 2)+pow(Y-right_center_Y, 2)
+                    
+                    # position of the candidate point
+                    if left_dis < best_left_dis:
+                        left = [None, None, None]
+                        left[0], left[1], left[2] = self.cut_region([Y, X], videos[i][j])
+                        best_left_dis = left_dis
+                        best_left = left
+                        get=True
+
+                    elif right_dis < best_right_dis:
+                        right = [None, None, None]
+                        right[0], right[1], right[2] = self.cut_region([Y, X], videos[i][j])
+                        best_right_dis = right_dis
+                        best_right = right
+                        get=True
+
+                all_ += 1
+                have = have + 1 if get else have
+
+                for k in range(3):
+                    left_img = cv2.resize(best_left[k], dsize=(self.W_3, self.H_3), interpolation=cv2.INTER_NEAREST)
+                    right_img = cv2.resize(best_right[k], dsize=(self.W_3, self.H_3), interpolation=cv2.INTER_NEAREST)
+                    left_eyes.append(left_img)
+                    right_eyes.append(right_img)
+                    gt.append(ground_truth[i])
+                    for l in range(5):
+                        dye_img_left = self.dye_image(left_img, HSV_convert[l])
+                        dye_img_right = self.dye_image(right_img, HSV_convert[l])
+                        left_eyes.append(dye_img_left)
+                        right_eyes.append(dye_img_right)
+                        gt.append(ground_truth[i])
+
+        print(have/all_)
+        assert left_eyes[0].shape == right_eyes[0].shape
+        assert len(left_eyes) == len(gt)
+        assert len(right_eyes) == len(gt)
+        np.save(self.path+"/second_data_p", [left_eyes, right_eyes, gt])
