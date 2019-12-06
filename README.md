@@ -95,14 +95,15 @@ so, here are the experiments we can do... <br>
 - (MUST) ways to expand our dataset (e.g. data augmentation, random filp, ratation...).
 
 ### :point_right: 本周计画：
-deadline(~12/13)<br>
+deadline(~12/14)<br>
 这周的分工**非常非常非常重要**，请务必完成(不然期末会很忙!)<br>
 
 #### 张可真
-- dataset 的部分我们**必须**告一个段落，deadline 是12/08(Sun) 10:00，请**一定**要搜集完毕、标好labels，把ground_truth.npy(存ANSWER)、info .txt(存width、height等)、video.npy(存视频vector)、region_point.npy(存眼睛中心点)等存成`图 1`格式。(一个batch约40支视频，无法整除的话最后一个可以少一点)。
+- dataset 的部分**必须**告一个段落，deadline 是12/08(Sun) 10:00，请**一定**要搜集完毕、标好labels，把ground_truth.npy(存ANSWER)、info .txt(存width、height等)、video.npy(存视频vector)、region_point.npy(存眼睛中心点)等存成`图 1`格式。(一个batch约40支视频，无法整除的话可平分)。
 - 负责第一层架构的tuning，请务必做到以下几点，确保实验有说服力：
 ```
-实验一：请以paper当中的原配置跑一次
+实验一：
+请以paper当中的原配置跑一次。
 (the first layer was a convolutional layer with a kernel size of 5 × 5 pixels, two
 pixel strides, and one padding, and the convolution layer was followed by a maximum
 pooling layer with a window size of 3 × 3 and two pixel strides.
@@ -111,12 +112,28 @@ pixel stride, one padding, and no pooling layer.
 The third layer was similar to the first layer , except that the convolutional kernel
 size was 3 × 3 pixels.)(图 2)。
 
-实验二：请以自己 fine-tuning 后的架构进行 training，请描述你的 model，使用了哪些 trick，
+实验二：
+请以自己 fine-tuning 后的架构进行 training，请描述你的 model，使用了哪些 trick，
 以及为什么这样的架构会有比较好的 performance (解释)。
 
-备注：必须注意 trade-off between accuracy and time，务必在实验当中测试两者跑的时间，并说
-明为何这样的 running time 对这样的 accuracy 是最佳组合。实验具体情形可以参考 template (图 3)。
+备注：
+必须注意 trade-off between accuracy and time，务必在实验当中测试两者跑的时间，并说
+明为何这样的 running time 对这样的 accuracy 是最佳组合。实验具体情形可以(推荐)参考 template (图 3)。
+请尽量详细描述你发现什么，实验结果为何？第一阶网络的 tuning 工作段就交给你完成了。
+另外，unknown 那格可以到 12/12 后再完成。
 ```
 | 图 1 | 图 2 | 图 3 |
 | ---- | ---- | ---- |
 | <img src="https://i.imgur.com/z2d8qGg.png" width="260"> | <img src="https://i.imgur.com/v4MKARf.png" width="260"> | <img src="https://i.imgur.com/6rp9VQc.png" width="260"> |
+
+
+#### 宋政钦
+- dataset 的部分**必须**告一个段落，deadline 是12/08(Sun) 10:00，请**一定**要搜集完毕、标好labels，把ground_truth.npy(存ANSWER)、info .txt(存width、height等)、video.npy(存视频vector)、region_point.npy(存眼睛中心点)等存成`图 1`格式。(一个batch约40支视频，无法整除的话可平分)。
+- 蒐集 unknown data，這部分需要五十支視頻(十人，五個動作)，deadline 是12/12 18:00，请**一定一定**要搜集完毕、标好labels，。
+
+| 图 1 |
+| ---- |
+| <img src="https://i.imgur.com/NLndv2G.png" width="260"> |
+
+#### 赵贞豪
+完成第二段网络的 training、fine-tuning。这部分实验同张可真。
