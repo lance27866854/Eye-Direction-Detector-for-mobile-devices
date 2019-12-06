@@ -69,3 +69,23 @@
 
 ## 进度日程表
 <img src="https://i.imgur.com/ld2yiPG.png" width="330">
+
+## What can we do next?
+#### First, we must think of what is the requisite for a paper! <br>
+New ideas, better performance(not necessary but important), objective evaluations, convincing description and images... <br>
+Basically, three novel ideas are required.
+
+#### Second, we must make our target clear and also ensure we can achieve it. <br>
+This is gonna be a tough choice. <br>
+We cannot do all things in one project. <br>
+so, here are the experiments we can do... <br>
+
+- (MUST) Compare the performance between different models.
+```
+>> Comparison between our algorithm and others' algorithm. (e.g. we can compare the top-1 accuracy and top-2 accuracy with our model and with others' model.)
+>> Make sure we well-control the experiments with different conditions (e.g. 1. add the data augmentation 2. the test images are from unknown people or from known people...)
+>> Document the results(e.g. tables, graphs...).
+```
+- Get more data. (so why we need to collect data by ourselves?)
+- New (or old) training tricks. (e.g. dropout, batch normalization...)
+- (MUST) ways to expand our dataset (e.g. data augmentation, random filp, ratation...).
