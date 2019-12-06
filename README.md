@@ -125,6 +125,7 @@ size was 3 × 3 pixels.)(图 2)。
 4. README.md 当中会说明如何用 DataManager 将 ground_truth.npy、info.txt、video.npy、region_point.npy
 转成 First_data 以及如何开启或关闭 data Augmentation。
 5. 尝试不同 zero_label 的值(在 DataManager 里，可由 main 修改)，看看精度会如何变化，建议尝试值：3、5、8、10、20。
+6. 转换资料的同时，记得看一下打印资讯当中 Data num 是多少，同样写在 report 中。
 ```
 | 图 1 | 图 2 | 图 3 |
 | ---- | ---- | ---- |
