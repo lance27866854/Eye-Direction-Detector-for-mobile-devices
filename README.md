@@ -86,6 +86,10 @@ so, here are the experiments we can do... <br>
 >> Make sure we well-control the experiments with different conditions (e.g. 1. add the data augmentation 2. the test images are from unknown people or from known people...)
 >> Document the results(e.g. tables, graphs...).
 ```
+![](https://i.imgur.com/C0Ry3Pp.png)
+
+![](https://i.imgur.com/YRQdGY0.png)
+
 - Get more data. (so why we need to collect data by ourselves?)
 - New (or old) training tricks. (e.g. dropout, batch normalization...)
 - (MUST) ways to expand our dataset (e.g. data augmentation, random filp, ratation...).
