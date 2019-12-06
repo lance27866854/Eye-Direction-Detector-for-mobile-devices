@@ -149,6 +149,7 @@ with tf.Session(config=config) as sess:
         
         # building computational graph (model)
         if FLAGS.restore:
+            # inference version cannot be -1.
             cnn_model = Model(learning_rate=FLAGS.learning_rate)
             model_path = '%s/checkpoint-%08d' % (FLAGS.train_dir, FLAGS.inference_version)
             cnn_model.saver.restore(sess, model_path)

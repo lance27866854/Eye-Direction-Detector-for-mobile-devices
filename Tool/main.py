@@ -29,9 +29,9 @@ REGION_POINTS = [[[ 45, 135], [113, 138]],
 
 # (First) Convert the data to .npy
 data_manager = Data_Manager(path=NAME)
-#data_manager.to_candidate_list()
-#data_manager.to_First_data()
+data_manager.to_candidate_list()
+data_manager.to_First_data(zero_label=5, data_augmentation=False)
 
 # (Second) Convert the data to .npy
 #data_manager.to_Second_data(True)
-data_manager.to_Second_plus()
+#data_manager.to_Second_plus()

@@ -40,8 +40,6 @@ class Data_Manager:
                 Gaussian_video.append(blur)
             
             for j in range(len(videos[i])):
-                #if j%2 == 1:
-                #    continue
                 print("Processing the "+str(j)+"-th frame...")
                 G1 = Gaussian_video[j][0] # the first imge in the j-th frame
                 G2 = Gaussian_video[j][1] # the second imge in the j-th frame
@@ -53,7 +51,7 @@ class Data_Manager:
 
     # ------ To First data ------ #
     # ENTRY
-    def to_First_data(self, threshold_left=150, threshold_right=150, HSV_convert=[[0.005, -0.46, -0.54],[0.03, 0.09, 0.45],[0.01, 0.27, -0.38],[-0.04, -0.61, 0.32],[-0.01, 0.6, 0.2]]):
+    def to_First_data(self, zero_label=5, data_augmentation=False, threshold_left=150, threshold_right=150, HSV_convert=[[0.005, -0.46, -0.54],[0.03, 0.09, 0.45],[0.01, 0.27, -0.38],[-0.04, -0.61, 0.32],[-0.01, 0.6, 0.2]]):
         videos = np.load(self.path+'/video.npy', allow_pickle=True)
         candidate_list = np.load(self.path+'/candidate_list.npy', allow_pickle=True)
         region_points = np.load(self.path+'/region_point.npy')
@@ -73,12 +71,10 @@ class Data_Manager:
             right_center_Y = region_points[i][1][1]
 
             for j in range(len(videos[i])):
-                #if j%2 == 1:
-                #    continue
                 print("Processing the "+str(j)+"-th frame...")
                 get=False
                 # for storing the candidate points...
-                zero_label_list = random.sample(range(0,len(candidate_list[i])),5)
+                zero_label_list = random.sample(range(0,len(candidate_list[i])), zero_label)
                 for k in range(len(candidate_list[i])):
                     X = candidate_list[i][k][2]
                     Y = candidate_list[i][k][1]
@@ -94,32 +90,36 @@ class Data_Manager:
                     
                     # position of the candidate point
                     if left_dis < threshold_left:
+                        #print("frame ["+str(j)+"] : left!")
+                        #self.show_img(in_3, 1)
                         gt.append(1)
                         data_1.append(in_1)
                         data_2.append(in_2)
                         data_3.append(in_3)
 
-                        for t in range(5):
-                            data_1.append(self.dye_image(in_1, HSV_convert[t]))
-                            data_2.append(self.dye_image(in_2, HSV_convert[t]))
-                            data_3.append(self.dye_image(in_3, HSV_convert[t]))
-                            gt.append(1)
-                        #print("frame ["+str(j)+"] : left!")
-                        #self.show_img(in_3, 1)
+                        if data_augmentation :
+                            for t in range(5):
+                                data_1.append(self.dye_image(in_1, HSV_convert[t]))
+                                data_2.append(self.dye_image(in_2, HSV_convert[t]))
+                                data_3.append(self.dye_image(in_3, HSV_convert[t]))
+                                gt.append(1)
+    
                         get=True
 
                     elif right_dis < threshold_right:
+                        #print("frame ["+str(j)+"] : right!")
+                        #self.show_img(in_3, 2)
                         gt.append(2)
                         data_1.append(in_1)
                         data_2.append(in_2)
                         data_3.append(in_3)
-                        for t in range(5):
-                            data_1.append(self.dye_image(in_1, HSV_convert[t]))
-                            data_2.append(self.dye_image(in_2, HSV_convert[t]))
-                            data_3.append(self.dye_image(in_3, HSV_convert[t]))
-                            gt.append(1)
-                        #print("frame ["+str(j)+"] : right!")
-                        #self.show_img(in_3, 2)
+                        if data_augmentation :
+                            for t in range(5):
+                                data_1.append(self.dye_image(in_1, HSV_convert[t]))
+                                data_2.append(self.dye_image(in_2, HSV_convert[t]))
+                                data_3.append(self.dye_image(in_3, HSV_convert[t]))
+                                gt.append(1)
+                        
                         get=True
 
                     else:
@@ -128,18 +128,25 @@ class Data_Manager:
                             data_1.append(in_1)
                             data_2.append(in_2)
                             data_3.append(in_3)
-                            for t in range(5):
-                                data_1.append(self.dye_image(in_1, HSV_convert[t]))
-                                data_2.append(self.dye_image(in_2, HSV_convert[t]))
-                                data_3.append(self.dye_image(in_3, HSV_convert[t]))
-                                gt.append(1)
+                            
+                            if data_augmentation :
+                                for t in range(5):
+                                    data_1.append(self.dye_image(in_1, HSV_convert[t]))
+                                    data_2.append(self.dye_image(in_2, HSV_convert[t]))
+                                    data_3.append(self.dye_image(in_3, HSV_convert[t]))
+                                    gt.append(1)
 
                 #self.visualize(videos[i][j],candidate_list[i])
                 all_ += 1
                 have = have + 1 if get else have
 
-        print(have/all_)
-        print(len(data_1))
+        print("success rate: ", have/all_)
+
+        assert len(data_1) == len(data_2) 
+        assert len(data_1) == len(data_3)
+        assert len(data_1) == len(gt)  
+
+        print("Data num: ", len(gt))
         np.save(self.path+"/first_data", [data_1, data_2, data_3, gt])
 
     def cut_region(self, center_in, frame):

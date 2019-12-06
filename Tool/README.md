@@ -33,6 +33,9 @@
 - 对于第一部分的training data：
     data_manager.to_First_data()
   执行后会在以 NAME 为命名的资料夹下看到1个新文件，即first_data.npy。
+    data_manager.to_First_data(zero_label=5, data_augmentation=True)
+  可调整zero_label(非眼睛点的选择数量)，以及data_augmentation(是否做data augmentation)去生成training data。
+  转换完会打印出 dataset 大小，请务必记录下来回报。
 
 - 对于第二部分的training data，只要执行下行即可：
     data_manager.to_Second_data()
