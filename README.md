@@ -117,12 +117,12 @@ size was 3 × 3 pixels.)(图 2)。
 以及为什么这样的架构会有比较好的 performance (解释)。
 
 备注：
-必须注意 trade-off between accuracy and time，务必在实验当中测试两者跑的时间，并说
+1. 必须注意 trade-off between accuracy and time，务必在实验当中测试两者跑的时间，并说
 明为何这样的 running time 对这样的 accuracy 是最佳组合。实验具体情形可以(推荐)参考 template (图 3)。
 请尽量详细描述你发现什么，实验结果为何？第一阶网络的 tuning 工作段就交给你完成了。
-另外，unknown 那格可以到 12/12 后再完成。
-
-精度须超过75.5%，理想达到85%以上。
+2. unknown 那格可以到 12/12 后再完成。
+3. 精度须超过75.5%，理想达到85%以上。
+4. README.md 当中会说明如何用 DataManager 将 ground_truth.npy、info.txt、video.npy、region_point.npy 转成 First_data 以及如何开启或关闭 data Augmentation。
 ```
 | 图 1 | 图 2 | 图 3 |
 | ---- | ---- | ---- |
@@ -131,7 +131,7 @@ size was 3 × 3 pixels.)(图 2)。
 
 #### 宋政钦
 - dataset 的部分**必须**告一个段落，deadline 是12/08(Sun) 10:00，请**一定**要搜集完毕、标好labels，把ground_truth.npy(存ANSWER)、info .txt(存width、height等)、video.npy(存视频vector)、region_point.npy(存眼睛中心点)等存成`图 1`格式。(一个batch约40支视频，无法整除的话可平分)。
-- 蒐集 unknown data，這部分需要五十支視頻(十人，五個動作)，deadline 是12/12 18:00，请**一定一定**要搜集完毕、标好labels，。
+- 搜集 unknown data，这部分需要五十支视频(十人，五个动作)，deadline 是12/12 18:00，请**一定一定**要搜集完毕、标好labels。
 
 | 图 1 |
 | ---- |
