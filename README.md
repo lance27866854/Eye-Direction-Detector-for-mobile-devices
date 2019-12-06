@@ -119,4 +119,4 @@ size was 3 × 3 pixels.)(图 2)。
 ```
 | 图 1 | 图 2 | 图 3 |
 | ---- | ---- | ---- |
-| <img src="https://i.imgur.com/z2d8qGg.png" width="260"> | <img src="https://i.imgur.com/v4MKARf.png" width="260"> | <img src="https://i.imgur.com/XiS1brN.png" width="260"> |
+| <img src="https://i.imgur.com/z2d8qGg.png" width="260"> | <img src="https://i.imgur.com/v4MKARf.png" width="260"> | <img src="https://i.imgur.com/6rp9VQc.png" width="260"> |
