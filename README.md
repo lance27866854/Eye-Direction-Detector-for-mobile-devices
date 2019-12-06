@@ -122,7 +122,8 @@ size was 3 × 3 pixels.)(图 2)。
 请尽量详细描述你发现什么，实验结果为何？第一阶网络的 tuning 工作段就交给你完成了。
 2. unknown 那格可以到 12/12 后再完成。
 3. 精度须超过75.5%，理想达到85%以上。
-4. README.md 当中会说明如何用 DataManager 将 ground_truth.npy、info.txt、video.npy、region_point.npy 转成 First_data 以及如何开启或关闭 data Augmentation。
+4. README.md 当中会说明如何用 DataManager 将 ground_truth.npy、info.txt、video.npy、region_point.npy
+转成 First_data 以及如何开启或关闭 data Augmentation。
 ```
 | 图 1 | 图 2 | 图 3 |
 | ---- | ---- | ---- |
