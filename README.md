@@ -122,11 +122,24 @@ size was 3 × 3 pixels.)(图 2)。
 请尽量详细描述你发现什么，实验结果为何。
 2. 精度须超过80%，理想达到90%以上。
 3. read资料的同时，记得看一下打印资讯当中 Data num 是多少，同样写在 report 中。
-
-(以下为建议做，可不做(自己衡量):)
 4. README.md 当中会说明如何用 DataManager 将 ground_truth.npy、info.txt、video.npy、region_point.npy
 转成 First_data 以及如何开启或关闭 data Augmentation。
+
+以下为建议做，可不做(自己衡量):
 5. 尝试不同 zero_label 的值(在 DataManager 里，可由 main 修改)，看看精度会如何变化，建议尝试值：3、5、8、10。
+
+NOTE:
+基本上我们要证明的是我们的 model 是最好的，所以在跑 baseline 的时候就可以不用那么执着于精度。
+所以在做 Original Model 那边的实验时可以跑个一两次就好(确定流程、结果是对的就好)。
+但在做 Our Model 那部分务必要非常谨慎，一定要调整到最佳架构！
+(参考 standford CS231 给出的方法) 假设说有三个可以尝试的参数，可以使用高斯分布去填值：
+for i in range(20): # 20 trials.
+  a = random.uniform(0.65, 0.95)
+  b = random.uniform(0.35, 0.45)
+  c = random.uniform(0.25, 0.85)
+  layer(a, b, c)
+
+"计时"、"尝试参数"请自己以代码实现。
 ```
 
 :boom: 下周12/14(看你进度，如果真的太赶也可下下周)，需写好report报告一下你在实验中的发现，可以word档呈现。:boom:
