@@ -119,19 +119,21 @@ size was 3 × 3 pixels.)(图 2)。
 备注：
 1. 必须注意 trade-off between accuracy and time，务必在实验当中测试两者跑的时间，并说
 明为何这样的 running time 对这样的 accuracy 是最佳组合。实验具体情形可以(推荐)参考 template (图 3)。
-请尽量详细描述你发现什么，实验结果为何？第一阶网络的 tuning 工作段就交给你完成了。
-2. unknown 那格可以到 12/12 后再完成。
-3. 精度须超过75.5%，理想达到85%以上。
+请尽量详细描述你发现什么，实验结果为何。
+2. 精度须超过80%，理想达到90%以上。
+3. read资料的同时，记得看一下打印资讯当中 Data num 是多少，同样写在 report 中。
+
+(以下为建议做，可不做(自己衡量):)
 4. README.md 当中会说明如何用 DataManager 将 ground_truth.npy、info.txt、video.npy、region_point.npy
 转成 First_data 以及如何开启或关闭 data Augmentation。
-5. 尝试不同 zero_label 的值(在 DataManager 里，可由 main 修改)，看看精度会如何变化，建议尝试值：3、5、8、10、20。
-6. 转换资料的同时，记得看一下打印资讯当中 Data num 是多少，同样写在 report 中。
+5. 尝试不同 zero_label 的值(在 DataManager 里，可由 main 修改)，看看精度会如何变化，建议尝试值：3、5、8、10。
 ```
+
+:boom: 下周12/14(看你进度，如果真的太赶也可下下周)，需写好report报告一下你在实验中的发现，可以word档呈现。:boom:
+
 | 图 1 | 图 2 | 图 3 |
 | ---- | ---- | ---- |
 | <img src="https://i.imgur.com/EDgdI5D.png" width="260"> | <img src="https://i.imgur.com/v4MKARf.png" width="260"> | <img src="https://i.imgur.com/6rp9VQc.png" width="260"> |
-
-:boom: 下周12/14(看你进度，如果真的太赶也可下下周)，需写好report报告一下你在实验中的发现，可以word档呈现。:boom:
 
 #### 宋政钦
 - dataset 的部分**必须**告一个段落，deadline 是12/08(Sun) 10:00，请**一定**要搜集完毕、标好labels，把ground_truth.npy(存ANSWER)、info .txt(存width、height等)、video.npy(存视频vector)、region_point.npy(存眼睛中心点)等存成`图 1`格式。(一个batch约40支视频，无法整除的话可平分)。
