@@ -131,6 +131,7 @@ size was 3 × 3 pixels.)(图 2)。
 | ---- | ---- | ---- |
 | <img src="https://i.imgur.com/EDgdI5D.png" width="260"> | <img src="https://i.imgur.com/v4MKARf.png" width="260"> | <img src="https://i.imgur.com/6rp9VQc.png" width="260"> |
 
+:boom: 下周12/14(看你进度，如果真的太赶也可下下周)，需写好report报告一下你在实验中的发现，可以word档呈现。:boom:
 
 #### 宋政钦
 - dataset 的部分**必须**告一个段落，deadline 是12/08(Sun) 10:00，请**一定**要搜集完毕、标好labels，把ground_truth.npy(存ANSWER)、info .txt(存width、height等)、video.npy(存视频vector)、region_point.npy(存眼睛中心点)等存成`图 1`格式。(一个batch约40支视频，无法整除的话可平分)。
