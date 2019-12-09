@@ -148,7 +148,7 @@ for i in range(20): # 20 trials.
 
 | 图 1 | 图 2 | 图 3 |
 | ---- | ---- | ---- |
-| <img src="https://i.imgur.com/EDgdI5D.png" width="260"> | <img src="https://i.imgur.com/v4MKARf.png" width="260"> | <img src="https://i.imgur.com/6rp9VQc.png" width="260"> |
+| <img src="https://i.imgur.com/EDgdI5D.png" width="260"> | <img src="https://i.imgur.com/v4MKARf.png" width="260"> | <img src="https://i.imgur.com/eNtizoc.png" width="260"> |
 
 #### 宋政钦
 - (Done) dataset 的部分**必须**告一个段落，deadline 是12/08(Sun) 10:00，请**一定**要搜集完毕、标好labels，把ground_truth.npy(存ANSWER)、info .txt(存width、height等)、video.npy(存视频vector)、region_point.npy(存眼睛中心点)等存成`图 1`格式。(一个batch约40支视频，无法整除的话可平分)。
