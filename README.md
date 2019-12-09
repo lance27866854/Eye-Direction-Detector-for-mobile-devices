@@ -99,7 +99,7 @@ deadline(~12/14)<br>
 这周的分工**非常非常非常重要**，请务必完成(不然期末会很忙!)<br>
 
 #### 张可真
-- dataset 的部分**必须**告一个段落，deadline 是12/08(Sun) 10:00，请**一定**要搜集完毕、标好labels，把ground_truth.npy(存ANSWER)、info .txt(存width、height等)、video.npy(存视频vector)、region_point.npy(存眼睛中心点)等存成`图 1`格式。(一个batch约40支视频，无法整除的话可平分)。
+- (Done) dataset 的部分**必须**告一个段落，deadline 是12/08(Sun) 10:00，请**一定**要搜集完毕、标好labels，把ground_truth.npy(存ANSWER)、info .txt(存width、height等)、video.npy(存视频vector)、region_point.npy(存眼睛中心点)等存成`图 1`格式。(一个batch约40支视频，无法整除的话可平分)。
 - 负责第一层架构的tuning，请务必做到以下几点，确保实验有说服力：
 ```
 实验一：
@@ -120,7 +120,7 @@ size was 3 × 3 pixels.)(图 2)。
 1. 必须注意 trade-off between accuracy and time，务必在实验当中测试两者跑的时间，并说
 明为何这样的 running time 对这样的 accuracy 是最佳组合。实验具体情形可以(推荐)参考 template (图 3)。
 请尽量详细描述你发现什么，实验结果为何。
-2. 精度须超过80%，理想达到90%以上。
+2. Testing 精度须超过 80%，理想达到 90% 以上。
 3. read资料的同时，记得看一下打印资讯当中 Data num 是多少，同样写在 report 中。
 4. README.md 当中会说明如何用 DataManager 将 ground_truth.npy、info.txt、video.npy、region_point.npy
 转成 First_data 以及如何开启或关闭 data Augmentation。
@@ -149,7 +149,7 @@ for i in range(20): # 20 trials.
 | <img src="https://i.imgur.com/EDgdI5D.png" width="260"> | <img src="https://i.imgur.com/v4MKARf.png" width="260"> | <img src="https://i.imgur.com/6rp9VQc.png" width="260"> |
 
 #### 宋政钦
-- dataset 的部分**必须**告一个段落，deadline 是12/08(Sun) 10:00，请**一定**要搜集完毕、标好labels，把ground_truth.npy(存ANSWER)、info .txt(存width、height等)、video.npy(存视频vector)、region_point.npy(存眼睛中心点)等存成`图 1`格式。(一个batch约40支视频，无法整除的话可平分)。
+- (Done) dataset 的部分**必须**告一个段落，deadline 是12/08(Sun) 10:00，请**一定**要搜集完毕、标好labels，把ground_truth.npy(存ANSWER)、info .txt(存width、height等)、video.npy(存视频vector)、region_point.npy(存眼睛中心点)等存成`图 1`格式。(一个batch约40支视频，无法整除的话可平分)。
 - 搜集 unknown data，这部分需要五十支视频(十人，五个动作)，deadline 是12/12 18:00，请**一定一定**要搜集完毕、标好labels。
 
 | 图 1 |
