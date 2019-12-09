@@ -124,9 +124,10 @@ size was 3 × 3 pixels.)(图 2)。
 3. read资料的同时，记得看一下打印资讯当中 Data num 是多少，同样写在 report 中。
 4. README.md 当中会说明如何用 DataManager 将 ground_truth.npy、info.txt、video.npy、region_point.npy
 转成 First_data 以及如何开启或关闭 data Augmentation。
+5. 请务必保留 Model 的 weights。把 train 资料夹最好的(精度高)的 weight 留下来，并且纪录每次 training 的结果。
 
 以下为建议做，可不做(自己衡量):
-5. 尝试不同 zero_label 的值(在 DataManager 里，可由 main 修改)，看看精度会如何变化，建议尝试值：3、5、8、10。
+6. 尝试不同 zero_label 的值(在 DataManager 里，可由 main 修改)，看看精度会如何变化，建议尝试值：3、5、8、10。
 
 NOTE:
 基本上我们要证明的是我们的 model 是最好的，所以在跑 baseline 的时候就可以不用那么执着于精度。
