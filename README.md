@@ -3,6 +3,8 @@
 ## Abstract
 Precise prediction of eyes' movement have become important in CV, meanwhile there are more and more HCI projects are devoted into this realm. However, the appearance-based modle is not quite robust in respond to changeable light and environments.
 
+<img src="images/1.png" width="330">
+
 We came upon this project due to the inconvenience of using smart phones in certain situations. E.g. people need to take off gloves to use their smart phone in winter or their hands are busy but need to use the cellphone. Actually, other body gestures like eye movements can also cast a command and people can enjoy hands-free operations.
 
 ## Related works
@@ -13,27 +15,31 @@ Appearance-based models are build by a mapping relationship between pixel values
 ## Methods
 To make the abstract problem concrete, we introduced the input-output relationship below. The input vector X={x|x1,x2,...xn is a 3-d tensor with size Width\*Height\*3} represents the images the camera took and the output space A={a1,a2,a3,a4,a5} represents different instructions user gave. Our goal is to build the mapping from X to A. Assume P_pred is the probability the user took a certain action in action space, then we have:
 
+<img src="images/2.png" width="330">
+
 The workflow is shown below. We splited this complicated mapping into two sub-parts. The first one is responsible for finding the eyes' position and classifying them as right eyes or left eyes. We will at first propose N candidate regions and train a classifier to cataglorize them into right eye, left eye or not eye. The second part then takes the information (cropped images and labels) received from the first part. And we will train the second network to build the mapping from cropped images to actions of the user.
 
-### Region Proposal
+<img src="images/3.png" width="330">
 
-### Eye Region Determination and Classification
+#### Region Proposal
 
-### Eye Movement Classification
+#### Eye Region Determination and Classification
+
+#### Eye Movement Classification
 
 ## Training
 
-### Feature Points Selection
+#### Feature Points Selection
 
-### Dataset
+#### Dataset
 
-### Data Augmentation
+#### Data Augmentation
 
 ## Experiments
 
-### Eye Detection and Classification
+#### Eye Detection and Classification
 
-### Eye Movement Classification
+#### Eye Movement Classification
 
 ## Conclusion
 
