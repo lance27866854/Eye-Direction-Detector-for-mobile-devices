@@ -103,7 +103,15 @@ class Data_Editor:
 
     def random_show(self, point, i):# point=[[1,1], [10,10]]
         data = np.load(self.name+'/video.npy', allow_pickle=True)
+        gt = np.load(self.name+'/ground_truth.npy') 
         video = data[i]
         fi = random.randrange(len(data[i]))
         frame = video[fi]
         self.show_plot(frame, point)
+        print(gt[i])
+
+    def test(self):
+        videos = np.load(self.name+'/video.npy', allow_pickle=True)
+        region_points = np.load(self.name+'/region_point.npy')
+        for i in range(len(videos)):
+            self.random_show(region_points[i], i)

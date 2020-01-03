@@ -1,7 +1,7 @@
 # Eye Direction Detector for mobile devices
 
 ## Abstract
-Precise prediction of eyes' movement have become important in CV, meanwhile there are more and more HCI projects are devoted into this realm. However, the appearance-based modle is not quite robust in respond to changeable light and environments.
+Precise prediction of eye movement have become important in CV, meanwhile there are more and more HCI projects are devoted into this realm. However, the appearance-based modle is not quite robust in respond to changeable light and environments.
 
 <img src="images/1.png" width="330">
 
@@ -85,7 +85,9 @@ The Comparison between the model from [10] and our model is shown below.
 
 ## Conclusion
 
-Here are our contribution: (1) we setup a complete dataset including 249 videos from 33 people. The characteristics of our dataset are the occlusions on faces and the variable light condition. In comparason to benchmark dataset, we focus on the applicability for mobile devices. (2) we built a computational process including the refinement on the region proposal mentioned in [7] and the classifier in [10]. (3) we designed 3 different data augmentation methods and proof its efficacy by our experiments.
+(1) we setup a complete dataset including 249 videos from 33 people. The characteristics of our dataset are the occlusions on faces and the variable light condition. In comparason to benchmark dataset, we focus on the applicability for mobile devices. <br>
+(2) we built a computational process including the refinement on the region proposal mentioned in [7] and the classifier in [10]. <br>
+(3) we designed 3 different data augmentation methods and proof its efficacy by our experiments.
 
 ## References
 

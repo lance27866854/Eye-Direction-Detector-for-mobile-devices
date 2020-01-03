@@ -4,6 +4,7 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import random
+import time
 
 ############################
 #        Data Manager      #
@@ -23,11 +24,12 @@ class Data_Manager:
 
     # ------ To candidate list ------ #
     # ENTRY
-    def to_candidate_list(self, kernel_SD=[0.0, 0.5, 0.9], num_candidates=200):
+    def to_candidate_list(self, kernel_SD=[0.0, 0.5, 0.9], num_candidates=100):
         # Get data
         videos = np.load(self.path+'/video.npy', allow_pickle=True)
         region_points = np.load(self.path+'/region_point.npy')
         candidate_list = []
+        
 
         # process the data for training...
         for i in range(len(videos)):
@@ -39,19 +41,28 @@ class Data_Manager:
                 blur[2] = cv2.Sobel(cv2.cvtColor(cv2.GaussianBlur(img, (3,3), kernel_SD[2]), cv2.COLOR_BGR2GRAY),cv2.CV_64F,0,1,ksize=3)
                 Gaussian_video.append(blur)
             
+            avg_time = 0
             for j in range(len(videos[i])):
                 print("Processing the "+str(j)+"-th frame...")
                 G1 = Gaussian_video[j][0] # the first imge in the j-th frame
                 G2 = Gaussian_video[j][1] # the second imge in the j-th frame
                 G3 = Gaussian_video[j][2] # the third imge in the j-th frame
+                start_time = time.time()
                 candidate_list_ = self.gradient_generator(G1, G2, G3, num_candidates)
+                avg_time += (time.time() - start_time)
                 candidate_list.append(candidate_list_)
+            print(avg_time/len(videos[i]))
+            break
 
-        np.save(self.path+"/candidate_list", candidate_list)
+        #np.save(self.path+"/candidate_list", candidate_list)
 
     # ------ To First data ------ #
     # ENTRY
-    def to_First_data(self, zero_label=5, data_augmentation=False, threshold_left=150, threshold_right=150, HSV_convert=[[0.005, -0.46, -0.54],[0.03, 0.09, 0.45],[0.01, 0.27, -0.38],[-0.04, -0.61, 0.32],[-0.01, 0.6, 0.2]]):
+    def to_First_data(self, zero_label=5, data_augmentation=True,
+        threshold_left=150, threshold_right=150,
+        HSV_convert=[[0.005, -0.46, -0.54],[0.03, 0.09, 0.45],[0.01, 0.27, -0.38],[-0.04, -0.61, 0.32],[-0.01, 0.6, 0.2]],
+        angle_convert=[-8,-5,0,5,8]):
+
         videos = np.load(self.path+'/video.npy', allow_pickle=True)
         candidate_list = np.load(self.path+'/candidate_list.npy', allow_pickle=True)
         region_points = np.load(self.path+'/region_point.npy')
@@ -63,7 +74,7 @@ class Data_Manager:
         all_=0
         have=0
         
-        for i in range(len(videos)):
+        for i in range(len(videos)):#
             # get the center point of the eye.
             left_center_X = region_points[i][0][0]
             left_center_Y = region_points[i][0][1]
@@ -71,70 +82,77 @@ class Data_Manager:
             right_center_Y = region_points[i][1][1]
 
             for j in range(len(videos[i])):
+                if j%2 == 1:
+                    continue
                 print("Processing the "+str(j)+"-th frame...")
-                get=False
-                # for storing the candidate points...
-                zero_label_list = random.sample(range(0,len(candidate_list[i])), zero_label)
-                for k in range(len(candidate_list[i])):
-                    X = candidate_list[i][k][2]
-                    Y = candidate_list[i][k][1]
-                    in_1, in_2, in_3 = self.cut_region([Y, X], videos[i][j])
+                for a in range(len(angle_convert)):
+                    M = cv2.getRotationMatrix2D((self.width/2, self.height/2), angle_convert[a], 1)
+                    rotated = cv2.warpAffine(videos[i][j], M, (self.width, self.height))
                     
-                    assert in_1.shape == (self.H_1, self.W_1, 3)
-                    assert in_2.shape == (self.H_2, self.W_2, 3)
-                    assert in_3.shape == (self.H_3, self.W_3, 3)
-
-                    # if we are confident about that this point is the eye center, append it to the list.
-                    left_dis = pow(X-left_center_X, 2)+pow(Y-left_center_Y, 2)
-                    right_dis = pow(X-right_center_X, 2)+pow(Y-right_center_Y, 2)
-                    
-                    # position of the candidate point
-                    if left_dis < threshold_left:
-                        #print("frame ["+str(j)+"] : left!")
-                        #self.show_img(in_3, 1)
-                        gt.append(1)
-                        data_1.append(in_1)
-                        data_2.append(in_2)
-                        data_3.append(in_3)
-
-                        if data_augmentation :
-                            for t in range(5):
-                                data_1.append(self.dye_image(in_1, HSV_convert[t]))
-                                data_2.append(self.dye_image(in_2, HSV_convert[t]))
-                                data_3.append(self.dye_image(in_3, HSV_convert[t]))
-                                gt.append(1)
-    
-                        get=True
-
-                    elif right_dis < threshold_right:
-                        #print("frame ["+str(j)+"] : right!")
-                        #self.show_img(in_3, 2)
-                        gt.append(2)
-                        data_1.append(in_1)
-                        data_2.append(in_2)
-                        data_3.append(in_3)
-                        if data_augmentation :
-                            for t in range(5):
-                                data_1.append(self.dye_image(in_1, HSV_convert[t]))
-                                data_2.append(self.dye_image(in_2, HSV_convert[t]))
-                                data_3.append(self.dye_image(in_3, HSV_convert[t]))
-                                gt.append(1)
+                    get=False
+                    # for storing the candidate points...
+                    zero_label_list = random.sample(range(0,len(candidate_list[i])), zero_label)
+                    for k in range(len(candidate_list[i])):
+                        X = candidate_list[i][k][2]
+                        Y = candidate_list[i][k][1]
+                        in_1, in_2, in_3 = self.cut_region([Y, X], rotated)
                         
-                        get=True
+                        assert in_1.shape == (self.H_1, self.W_1, 3)
+                        assert in_2.shape == (self.H_2, self.W_2, 3)
+                        assert in_3.shape == (self.H_3, self.W_3, 3)
 
-                    else:
-                        if k in zero_label_list:
-                            gt.append(0)
+                        # if we are confident about that this point is the eye center, append it to the list.
+                        left_dis = pow(X-left_center_X, 2)+pow(Y-left_center_Y, 2)
+                        right_dis = pow(X-right_center_X, 2)+pow(Y-right_center_Y, 2)
+                        
+                        # position of the candidate point
+                        if left_dis < threshold_left:
+                            #print("frame ["+str(j)+"] : left!")
+                            #self.show_img(in_3, 1)
+                            gt.append(1)
                             data_1.append(in_1)
                             data_2.append(in_2)
                             data_3.append(in_3)
-                            
+
                             if data_augmentation :
-                                for t in range(5):
+                                for t in range(len(HSV_convert)):
                                     data_1.append(self.dye_image(in_1, HSV_convert[t]))
                                     data_2.append(self.dye_image(in_2, HSV_convert[t]))
                                     data_3.append(self.dye_image(in_3, HSV_convert[t]))
                                     gt.append(1)
+        
+                            get=True
+
+                        elif right_dis < threshold_right:
+                            #print("frame ["+str(j)+"] : right!")
+                            #self.show_img(in_3, 2)
+                            gt.append(2)
+                            data_1.append(in_1)
+                            data_2.append(in_2)
+                            data_3.append(in_3)
+                            if data_augmentation :
+                                for t in range(len(HSV_convert)):
+                                    data_1.append(self.dye_image(in_1, HSV_convert[t]))
+                                    data_2.append(self.dye_image(in_2, HSV_convert[t]))
+                                    data_3.append(self.dye_image(in_3, HSV_convert[t]))
+                                    gt.append(2)
+                            
+                            get=True
+
+                        else:
+                            if k in zero_label_list:
+                                gt.append(0)
+                                data_1.append(in_1)
+                                data_2.append(in_2)
+                                data_3.append(in_3)
+                                
+                                if data_augmentation :
+                                    for t in range(len(HSV_convert)):
+                                        data_1.append(self.dye_image(in_1, HSV_convert[t]))
+                                        data_2.append(self.dye_image(in_2, HSV_convert[t]))
+                                        data_3.append(self.dye_image(in_3, HSV_convert[t]))
+                                        gt.append(0)
+                        #self.show_img(in_3, 1)
 
                 #self.visualize(videos[i][j],candidate_list[i])
                 all_ += 1
@@ -142,12 +160,16 @@ class Data_Manager:
 
         print("success rate: ", have/all_)
 
-        assert len(data_1) == len(data_2) 
+        assert len(data_1) == len(data_2)
         assert len(data_1) == len(data_3)
         assert len(data_1) == len(gt)  
 
         print("Data num: ", len(gt))
-        np.save(self.path+"/first_data", [data_1, data_2, data_3, gt])
+        
+        if data_augmentation:
+            np.save(self.path+"/aug/first_data", [data_1, data_2, data_3, gt])
+        else:
+            np.save(self.path+"/no_aug/first_data", [data_1, data_2, data_3, gt])
 
     def cut_region(self, center_in, frame):
         in_Y_cut, in_X_cut = center_in[0], center_in[1]
@@ -195,14 +217,18 @@ class Data_Manager:
                 maximum = np.max([G1_max, G2_max, G3_max])
                 if np.max(G2[i][j]) == maximum:
                     candidate_list.append([G2[i][j], i, j])
-                    
+
         candidate_list = sorted(candidate_list, key = lambda x : x[0], reverse=True)
         candidate_list_ = candidate_list[0:num_candidates]
         return candidate_list_
 
     # ------ To cut Regions ------ #
     # ENTRY
-    def to_Second_data(self, random_show=False, HSV_convert=[[0.005, -0.46, -0.54],[0.03, 0.09, 0.45],[0.01, 0.27, -0.38],[-0.04, -0.61, 0.32],[-0.01, 0.6, 0.2]]):
+    def to_Second_data(self, random_show=False, data_augmentation=True,
+        HSV_convert=[[0.005, -0.46, -0.54],[0.03, 0.09, 0.45],[0.01, 0.27, -0.38],[-0.04, -0.61, 0.32],[-0.01, 0.6, 0.2]],
+        angle_convert=[-8,-5,0,5,8],
+        position_offset_x=[0,-5,5,0,0],
+        position_offset_y=[0,0,0,-5,5]):
         
         videos = np.load(self.path+'/video.npy', allow_pickle=True)
         region_points = np.load(self.path+'/region_point.npy')
@@ -211,37 +237,51 @@ class Data_Manager:
         print(region_points)
 
         for i in range(len(videos)):
-            
-            left_X = region_points[i][0][0]
-            left_Y = region_points[i][0][1]
-            right_X = region_points[i][1][0]
-            right_Y = region_points[i][1][1]
+            for p in range(5):
+                left_X = region_points[i][0][0]+position_offset_x[p]
+                left_Y = region_points[i][0][1]+position_offset_y[p]
+                right_X = region_points[i][1][0]+position_offset_x[p]
+                right_Y = region_points[i][1][1]+position_offset_y[p]
 
-            if random_show :
-                fi = random.randrange(len(videos[i]))
-                _, _, left = self.cut_region([left_Y, left_X], videos[i][fi])
-                _, _, right = self.cut_region([right_Y, right_X], videos[i][fi])
-                self.show_img(left, ground_truth[i])
-                self.show_img(right, ground_truth[i])
+                if random_show :
+                    fi = random.randrange(len(videos[i]))
+                    _, _, left = self.cut_region([left_Y, left_X], videos[i][fi])
+                    _, _, right = self.cut_region([right_Y, right_X], videos[i][fi])
+                    self.show_img(left, ground_truth[i])
+                    self.show_img(right, ground_truth[i])
+                
+                for j in range(len(videos[i])):
+                    if j%2 == 1:
+                        continue
+                    print("Processing the "+str(j)+"-th frame...")
+                    for a in range(5):
+                        M = cv2.getRotationMatrix2D((self.width/2, self.height/2), angle_convert[a], 1)
+                        rotated = cv2.warpAffine(videos[i][j], M, (self.width, self.height))
+                        
+                        _, _, left = self.cut_region([left_Y, left_X], rotated)
+                        _, _, right = self.cut_region([right_Y, right_X], rotated)
+                        
+                        left_eyes.append(left)
+                        right_eyes.append(right)
+                        gt.append(ground_truth[i])
+
+                        if data_augmentation:
+                            for k in range(5):
+                                dye_img_left = self.dye_image(left, HSV_convert[k])
+                                dye_img_right = self.dye_image(right, HSV_convert[k])
+                                left_eyes.append(dye_img_left)
+                                right_eyes.append(dye_img_right)
+                                gt.append(ground_truth[i])
             
-            for j in range(len(videos[i])):
-                print("Processing the "+str(j)+"-th frame...")
-                _, _, left = self.cut_region([left_Y, left_X], videos[i][j])
-                _, _, right = self.cut_region([right_Y, right_X], videos[i][j])
-                left_eyes.append(left)
-                right_eyes.append(right)
-                gt.append(ground_truth[i])
-                for k in range(5):
-                    dye_img_left = self.dye_image(left, HSV_convert[k])
-                    dye_img_right = self.dye_image(right, HSV_convert[k])
-                    left_eyes.append(dye_img_left)
-                    right_eyes.append(dye_img_right)
-                    gt.append(ground_truth[i])
-        
         assert len(left_eyes) == len(right_eyes)
         assert len(left_eyes) == len(gt)
 
-        np.save(self.path+"/second_data", [left_eyes, right_eyes, gt])
+        print("Data num: ", len(gt))
+
+        if data_augmentation:
+            np.save(self.path+"/aug/second_data", [left_eyes, right_eyes, gt])
+        else:
+            np.save(self.path+"/no_aug/second_data", [left_eyes, right_eyes, gt])  
     
     def dye_image(self, img, HSV_convert):
         img_HSV = cv2.cvtColor(img.astype(np.float32)/255.0, cv2.COLOR_RGB2HSV)
