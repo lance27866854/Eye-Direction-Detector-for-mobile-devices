@@ -6,10 +6,12 @@ from collections import defaultdict
 import time
 import os
 import random
-random.seed(5487)
 
 from model import Model
 from utils import document, plot_doc, write_info, write_test,visualize
+
+random.seed(5487)
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 ############################
 #         Parameters       #
@@ -23,18 +25,18 @@ W_3 = 48
 # --------- Mode --------- #
 tf.app.flags.DEFINE_boolean("is_train", True, "Set to False to inference.")
 tf.app.flags.DEFINE_boolean("restore", False, "training mode.")
+tf.app.flags.DEFINE_boolean("data_augmentation", True, "training mode.")
 # ---- Hyperparameters --- #
-tf.app.flags.DEFINE_float("learning_rate", 0.005, "Number of labels.")
-tf.app.flags.DEFINE_integer("epoch", 100, "Number of epoch.")
-tf.app.flags.DEFINE_integer("batch", 3, "Number of batches(20*videos).")
-tf.app.flags.DEFINE_integer("slice", 10, "Number of videos.") # small batch
+tf.app.flags.DEFINE_float("learning_rate", 0.004, "Number of labels.")
+tf.app.flags.DEFINE_integer("epoch", 200, "Number of epoch.")
+tf.app.flags.DEFINE_integer("batch", 8, "Number of batches(20*videos).")
+tf.app.flags.DEFINE_integer("slice", 2000, "Number of image.") # small batch
 # ------ Save Model ------ #
-tf.app.flags.DEFINE_string("data_dir", "../Tool/", "Data directory")
+tf.app.flags.DEFINE_string("data_dir", "../dataset/", "Data directory")
 tf.app.flags.DEFINE_string("train_dir", "./train", "Weights directory")
-tf.app.flags.DEFINE_string("test_dir", "3", "Test directory")
-tf.app.flags.DEFINE_integer("per_checkpoint", 2000, "How many steps to do per checkpoint.")
+tf.app.flags.DEFINE_string("test_dir", "test_known", "Test directory")
 tf.app.flags.DEFINE_integer("inference_version", -1, "The version for inferencing.")
-tf.app.flags.DEFINE_integer("val_num", 10, "number of validation images.")
+tf.app.flags.DEFINE_integer("val_num", 4000, "number of validation images.")
 
 FLAGS = tf.app.flags.FLAGS
 
@@ -46,10 +48,12 @@ def get_data(is_train=FLAGS.is_train):
     right_eye = [] # (4-d tensor) shape : n, w, h, 3
     gt = [] # shape : n
     
+    aug_dir = '/aug' if FLAGS.data_augmentation else '/no_aug'
+
     if is_train:
         for i in range(FLAGS.batch):
             print("Getting the "+str(i)+"-th batch.")
-            data_ = np.load(FLAGS.data_dir+str(i)+'/second_data.npy', allow_pickle=True)
+            data_ = np.load(FLAGS.data_dir+str(i)+aug_dir+'/second_data.npy', allow_pickle=True)
             left_eye_, right_eye_, gt_ = data_[0], data_[1], data_[2]
             # shuffle
             shuffle_index = np.arange(left_eye_.shape[0])
@@ -63,9 +67,9 @@ def get_data(is_train=FLAGS.is_train):
 
     else:
         print("Getting the test data.")
-        data_ = np.load(FLAGS.data_dir+FLAGS.test_dir+'/second_data.npy', allow_pickle=True)
+        data_ = np.load(FLAGS.data_dir+FLAGS.test_dir+aug_dir+'/second_data.npy', allow_pickle=True)
         left_eye_, right_eye_, gt_ = data_[0], data_[1], data_[2]
-        for i in range(len(left_eye_)):
+        for i in range(left_eye_.shape[0]):
             left_eye.append(left_eye_[i])
             right_eye.append(right_eye_[i])
             gt.append(gt_[i])
@@ -93,11 +97,42 @@ def train(model, sess, left_eye, right_eye, gt):
 
     return loss, acc
 
-def test(model, sess, left_eye, right_eye, gt):
-    feed = {model.left: left_eye, model.right: right_eye, model.y: gt}
-    loss, acc = sess.run([model.loss, model.acc], feed_dict=feed)
+def validation(model, sess, left_eye, right_eye, gt):
+    loss, acc = 0.0, 0.0
+    st, ed, times = 0, 0, 0
+    max_len = len(left_eye) # shape : [n, 2, H, W]
+
+    # for every slice
+    while st < max_len:
+        ed = st + FLAGS.slice if st + FLAGS.slice < max_len else max_len
+        print("Trainig 1 slice, from "+str(st)+" to "+str(ed-1)+", ...")
+        feed = {model.left: left_eye[st:ed], model.right: right_eye[st:ed], model.y: gt[st:ed]}
+        loss_, acc_ = sess.run([model.loss_val, model.acc_val], feed_dict=feed)
+        loss += loss_
+        acc += acc_
+        times += 1
+        st = ed
     
+    loss/=times
+    acc/=times
+
     return loss, acc
+
+def test(model, sess, left_eye, right_eye, gt):
+    length = len(gt)
+    avg_time = 0
+    avg_acc = 0
+    print(length)
+    for i in range(length):
+        start_time = time.time()
+        feed = {model.left: [left_eye[i]], model.right: [right_eye[i]], model.y: [gt[i]]}
+        acc = sess.run([model.acc_val], feed_dict=feed)
+        avg_time += (time.time() - start_time)
+        avg_acc += acc[0]
+
+    avg_time /= length
+    avg_acc /= length
+    return avg_acc, avg_time
 
 ############################
 #           Main           #
@@ -120,7 +155,7 @@ with tf.Session(config=config) as sess:
             model = Model(learning_rate=FLAGS.learning_rate)
             model_path = '%s/checkpoint-%08d' % (FLAGS.train_dir, FLAGS.inference_version)
             model.saver.restore(sess, model_path)
-        else:    
+        else:
             model = Model(learning_rate=FLAGS.learning_rate)
             tf.global_variables_initializer().run()
         
@@ -129,15 +164,17 @@ with tf.Session(config=config) as sess:
         
         # training data
         left_eye, right_eye, gt = get_data()
+        print(len(gt))
 
         # get validation data
         left_eye_val, right_eye_val, gt_val = left_eye[:FLAGS.val_num], right_eye[:FLAGS.val_num], gt[:FLAGS.val_num]
         left_eye, right_eye, gt = left_eye[FLAGS.val_num:], right_eye[FLAGS.val_num:], gt[FLAGS.val_num:]
 
         for epoch in range(FLAGS.epoch):
+            print(">>> The "+str(epoch)+"-th epoch.")
             start_time = time.time()
             train_loss, train_acc = train(model, sess, left_eye, right_eye, gt)
-            val_loss, val_acc = test(model, sess, left_eye_val, right_eye_val, gt_val)
+            val_loss, val_acc = validation(model, sess, left_eye_val, right_eye_val, gt_val)
             
             acc = val_acc
             if acc > best_acc:
@@ -160,5 +197,5 @@ with tf.Session(config=config) as sess:
 
         model.saver.restore(sess, model_path)
         left_eye, right_eye, gt = get_data()
-        test_acc = test(model, sess, left_eye, right_eye, gt)
-        write_test(test_acc)
+        test_acc, test_time = test(model, sess, left_eye, right_eye, gt)
+        write_test(test_acc, test_time)

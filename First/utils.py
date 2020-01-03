@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import os
 
@@ -58,11 +60,13 @@ def write_info(best_epoch, best_acc):
     file.write('Best Accuracy = {:.8f}\n'.format(best_acc))
     file.write('-------')
 
-def write_test(test_acc):
+def write_test(test_acc, left_acc, right_acc):
     print("test accuracy: {}".format(test_acc))
     print("--------------------")
     if os.path.isdir("info") == False:
             os.mkdir("info")
     file = open('info/test_acc.txt', 'a')
     file.write('Test acc = {:.8f}\n'.format(test_acc))
+    file.write('Left acc = {:.8f}\n'.format(left_acc))
+    file.write('Right acc = {:.8f}\n'.format(right_acc))
     file.write('-------')

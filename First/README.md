@@ -1,6 +1,7 @@
 - FLAGS：
     is_train: True 进行 training，False 进行 testing。
     restore: True 会读取存储的 weights，此时须输入inference_version。
+    data_augmentation: True 会读取做过augmentation的data。
     batch: 这里指的是 file 要读到多少。 (抱歉，这跟一般的用语不同)
     slice: 就是指一般的 batch，一次更新要从多少 image 一起 (stochastic)。
     data_dir: 把 training data 放在哪个资料夹下。
@@ -17,5 +18,8 @@
     但要注意，这里的图会从新的地方开始画，若要得到整个　loss、accuracy 的过程必须自己写代码实现。
 
 - 架构调整说明：
-    打开 model.py，基本上可以由 layer_1、layer_2、layer_3 三个函数修改模型架构。
+    打开 model.py，基本上可以由 # Layer 1, 2, 3 三个地方修改模型架构。
     也可调整 init 中的 learning_rate、learning_rate_decay_factor，去得到较快的收敛。
+
+- 训练后：
+    记得把train资料夹最好的(精度高)的weight留下来，并且纪录每次training的结果

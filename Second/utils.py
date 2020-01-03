@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('pdf')
 import matplotlib.pyplot as plt
 import os
 
@@ -52,13 +54,14 @@ def write_info(best_epoch, best_acc):
     file.write('Best Accuracy = {:.8f}\n'.format(best_acc))
     file.write('-------')
 
-def write_test(test_acc):
+def write_test(test_acc, test_time):
     print("test accuracy: {}".format(test_acc))
     print("--------------------")
     if os.path.isdir("info") == False:
             os.mkdir("info")
     file = open('info/test_acc.txt', 'a')
     file.write('Test acc = {:.8f}\n'.format(test_acc))
+    file.write('Test time = {:.8f}\n'.format(test_time))
     file.write('-------')
 
 def visualize(video):
