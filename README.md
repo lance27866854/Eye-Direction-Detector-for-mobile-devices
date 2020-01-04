@@ -23,7 +23,7 @@ The workflow is shown below. We splited this complicated mapping into two sub-pa
 
 #### Region Proposal
 
-Convolution on the whole image, say image with size 540*960, requires large computational resources and make real-time detection impossible. [10] use Viola and Jones’ face detector to find features on faces fast. However, the downside of this method is that occulsions often make detection failed. Hence, instead of taking advantage of features on faces, we can predict possible eye regions with outlines of human's faces. Mentioned in [7], the outlines on our eyes lid and pupils are clear. As a result, we can extract those lines as references for precise prediction. First, we convolved the images using three Gaussian kernels with different standard deviations and got Gaussian three images. After that, we convolved those Gaussian images with Sobel kernels to get the outlines. Now, we have 3 outline images in respect to different clearity based on one frame. We then used a 5\*5 window to slide over the image. If the pixel value on the second outline image is the maximum over the 5\*5\*3 pixel values, we picked it as a candidate point.
+Convolution on the whole image, say image with size 540\*960, requires large computational resources and make real-time detection impossible. [10] use Viola and Jones’ face detector to find features on faces fast. However, the downside of this method is that occulsions often make detection failed. Hence, instead of taking advantage of features on faces, we can predict possible eye regions with outlines of human's faces. Mentioned in [7], the outlines on our eyes lid and pupils are clear. As a result, we can extract those lines as references for precise prediction. First, we convolved the images using three Gaussian kernels with different standard deviations and got Gaussian three images. After that, we convolved those Gaussian images with Sobel kernels to get the outlines. Now, we have 3 outline images in respect to different clearity based on one frame. We then used a 5\*5 window to slide over the image. If the pixel value on the second outline image is the maximum over the 5\*5\*3 pixel values, we picked it as a candidate point.
 
 <img src="images/4.png" width="680">
 
@@ -33,7 +33,7 @@ M points will be collected after the operation mentioned above. We sorted over t
 
 #### Eye Region Determination and Classification
 
-Because of the unfixed size of the users' eyes, we cropped 3 images (12\*24,18\*36,24\*48) according to each candidate point in respond to different distance between the device and the user. Also, we used a 3-channel CNN to classify those proposed regions and chose the one with largest logit value as output.
+Because of the unfixed size of the users' eyes, we cropped 3 images (12\*24, 18\*36, 24\*48) according to each candidate point in respond to different distance between the device and the user. Also, we used a 3-channel CNN to classify those proposed regions and chose the one with largest logit value as output.
 
 The architecture is shown below. The convolution layers are with filter size=3\*3, stride=2 and the depth is 64. Each layer is followed by Batch normalization layer and using Relu as activation function. Also, pooling layers are applied, and the sizes are all 2\*2 with stride 3, 1 and 1 in correspond to those three layers.
 
@@ -82,6 +82,11 @@ We did some comparison on our algorithm and OpenCV. The Table and screenshots be
 The Comparison between the model from [10] and our model is shown below.
 
 <img src="images/13.png" width="550">
+
+#### Evaluation
+The two networks were concated and examined with test set (known and unknown). The results are shown below. We added a "Resizer" between the two networks to prevent overly confident prediction. Specifically, Resizer cropped 20\*30, 28\*42 and 36*\54 images based on the candidate points. Also it would shrink back to the original size -- 12\*24, 18\*36 and 24\*48 -- and feed them into the second network.
+
+<img src="images/14.png" width="450">
 
 ## Conclusion
 
