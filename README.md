@@ -27,7 +27,7 @@ Convolution on the whole image, say image with size 540\*960, requires large com
 
 <img src="images/4.png" width="680">
 
-M points will be collected after the operation mentioned above. We sorted over those M points and get N points with largest pixel values. Larger the number N is, heavier overhead we will get when classifying them. The selection of N value depends on the precision and the running time. To find the optimum value, we did some trials over different N value (N=50,100,150,200,250). The results indicated that N=200 was the knee point and we picked it as the number of candidate points.
+M points will be collected after the operation mentioned above. We sorted over those M points and get N points with largest pixel values. Larger the number N is, heavier overhead we will get when classifying them. The selection of N value depends on the ccuracy and the running time. To find the optimum value, we did some trials over different N value (N=50,100,150,200,250). The results indicated that N=200 was the knee point and we picked it as the number of candidate points.
 
 <img src="images/5.png" width="400">
 
