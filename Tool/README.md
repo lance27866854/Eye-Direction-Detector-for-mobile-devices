@@ -3,7 +3,7 @@ Download the dataset:
 
 Just adjust main.py and use it as follows:
 
-1) Data_Editor:
+## Data_Editor:
 
 - Define the folder name and modify the NAME variable directly (recommended number 0,1,2, ...).
 - Define the size of the folder (FILE_NUM) and specify 20 videos (each video must be numbered 0,1,2 ... 19).
