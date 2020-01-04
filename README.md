@@ -1,7 +1,7 @@
 # Eye Direction Detector for mobile devices
 
 ## Abstract
-Precise prediction of eye movement is quite important in CV, meanwhile there are more and more HCI projects are devoted into this realm. However, the appearance-based modle is not quite robust in respond to changeable light and environments.
+Precise prediction of eye movement is quite important in CV. In addition, there are more and more HCI projects are devoted into this realm. However, the appearance-based modle is not quite robust in respond to changeable light and environments.
 
 We came upon this idea due to the inconvenience of using smart phones in some situations. E.g. people need to take off gloves to use their smart phone in winter or their hands are busy but need to use the cellphone. Actually, other body gestures like eye movements can also cast a command and people can enjoy hands-free operations.
 
