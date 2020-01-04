@@ -4,17 +4,17 @@ import numpy as np
 #           First          #
 ############################
 
-def cut_region(center_in, frame, W_1=24, H_1=12, W_2=36, H_2=18, W_3=48, H_3=24, width=180, height=360):
+def cut_region(center_in, frame, W_1=30, H_1=20, W_2=42, H_2=28, W_3=54, H_3=36, width=180, height=360):
     in_Y_cut, in_X_cut = center_in[0], center_in[1]
     padding_frame = np.zeros(shape=(H_3*2+height, W_3*2+width, 3), dtype=float)
     padding_frame[H_3:H_3+height, W_3:W_3+width] += frame
     
-    st_Y_1 = (int)(in_Y_cut-H_1/2+H_3+H_1/6)
-    ed_Y_1 = (int)(in_Y_cut+H_1/2+H_3+H_1/6)
-    st_Y_2 = (int)(in_Y_cut-H_2/2+H_3+H_2/6)
-    ed_Y_2 = (int)(in_Y_cut+H_2/2+H_3+H_2/6)
-    st_Y_3 = (int)(in_Y_cut-H_3/2+H_3+H_3/6)
-    ed_Y_3 = (int)(in_Y_cut+H_3/2+H_3+H_3/6)
+    st_Y_1 = (int)(in_Y_cut-H_1/2+H_3)
+    ed_Y_1 = (int)(in_Y_cut+H_1/2+H_3)
+    st_Y_2 = (int)(in_Y_cut-H_2/2+H_3)
+    ed_Y_2 = (int)(in_Y_cut+H_2/2+H_3)
+    st_Y_3 = (int)(in_Y_cut-H_3/2+H_3)
+    ed_Y_3 = (int)(in_Y_cut+H_3/2+H_3)
     st_X_1 = (int)(in_X_cut-W_1/2)+W_3
     ed_X_1 = (int)(in_X_cut+W_1/2)+W_3
     st_X_2 = (int)(in_X_cut-W_2/2)+W_3

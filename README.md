@@ -75,18 +75,16 @@ We did some comparison on our algorithm and OpenCV. The Table and screenshots be
 
 <img src="images/11.png" width="550">
 
-<img src="images/12.png" width="330">
-
 #### Eye Movement Classification
 
 The Comparison between the model from [10] and our model is shown below.
 
-<img src="images/13.png" width="550">
+<img src="images/12.png" width="550">
 
 #### Evaluation
 The two networks were concated and examined with test set (known and unknown). The results are shown below. We added a "Resizer" between the two networks to prevent overly confident prediction. Specifically, Resizer cropped 20\*30, 28\*42 and 36\*54 images based on the candidate points. Also it would shrink back to the original size -- 12\*24, 18\*36 and 24\*48 -- and feed them into the second network.
 
-<img src="images/14.png" width="450">
+<img src="images/13.png" width="450">
 
 ## Conclusion
 
