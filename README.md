@@ -33,7 +33,7 @@ M points will be collected after the operation mentioned above. We sorted over t
 
 #### Eye Region Determination and Classification
 
-Because the size of the users' eyes is variable, we cropped 3 images (12\*24, 18\*36, 24\*48) according to each candidate point in respond to different distances between the device and the user. Also, we adopted a 3-channel CNN to classify those proposed images and chose the one with the largest logit value as the output.
+Because the size of the users' eyes is variable, we cropped 3 images (12\*24, 18\*36, 24\*48) according to each candidate point in respond to different distances between the device and the user. Also, we adopted a 3-channel CNNs to classify those proposed images and chose the one with the largest logit value as the output.
 
 The architecture is shown below. The convolution layers are with filter size=3\*3, stride=2 and the depth is 64. Each layer is followed by Batch normalization layer and using Relu as activation function. Also, pooling layers are applied, and the kernel sizes are all 2\*2 with stride 3, 1 and 1 respectively.
 
@@ -41,9 +41,7 @@ The architecture is shown below. The convolution layers are with filter size=3\*
 
 #### Eye Movement Classification
 
-We will get at most 2 images with labels from the first CNN. On the second CNN, our goal is to collect the features of right eyes and left eyes. Finally, combine all the infomation and predict the user's command.
-
-The architecture is almost the same as the first CNN. The convolution layers are with filter size=3\*3, stride=2 and the depth is 64. Each layer is followed by Batch normalization layer and using Relu as activation function. Also, pooling layers are applied, and the sizes are all 2\*2 with stride 3, 1 and 1 in correspond to those three layers.
+We will get at most 2 images with labels from the first CNNs, and aim to collect the features of right eyes and left eyes with the second CNNs. Finally, combine all the infomation and predict user's commands. The architecture is almost the same as the first CNNs. The convolution layers are with filter size=3\*3, stride=2, depth=64. Each layer is followed by a Batch normalization layer and Relu as activation function. Also, pooling layers are applied, and the kernel sizes are all 2\*2 with stride 3, 1 and 1 respectively.
 
 <img src="images/7.png" width="650">
 
@@ -51,13 +49,13 @@ The architecture is almost the same as the first CNN. The convolution layers are
 
 #### Dataset
 
-Training was done on our dataset. The motivation of collecting dataset by ourselves lies in the inapplicability of benchmark datasets -- BioID and GI4E, which are lack of occlusion and variable light and environment. We collect 249 videos from 33 people, and split them into 3 parts -- training set, test set (known), test set (unknown). To simulate real situation, test set (unknown) is collected from users that are not appeared in training set.
+Training and testing were done on our dataset. The motivation of collecting our own dataset lies in the inapplicability of benchmark datasets -- BioID and GI4E, which are lack of occlusion and variable light conditions. We collected 249 videos from 33 people, and split them into 3 parts -- training set, test set (known), test set (unknown). To simulate real situation, test set (unknown) is collected from users that are not appeared in training set.
 
 <img src="images/8.png" width="600">
 
 #### Data Augmentation
 
-To enlarge our dataset and enhance the robustness of the model, we applied some data augmentation methods. Rotating the images is the first, we rotated the image in -8,-5,5,8 degrees and cropped as new training data. Secondly, we applied +-5 displacement on our training images. Most importantly, we selected 5 different HSV adjustment to enhance the robustness over different light condition. We have 493902 trainig images on the first neuron networks and 344100 ones on the second.
+To enlarge our dataset and enhance the robustness of the model, we applied some data augmentation methods. Rotating the images is the first. We rotated the image in -8,-5,5,8 degrees and cropped them as new training data. Secondly, we applied +-5 displacement on our training images. Most importantly, we selected 5 different sets of HSV adjustment to enhance the robustness. Ultimately, we have 493902 trainig images on the first traing set and 344100 training images on the second one.
 
 <img src="images/9.png" width="350">
 
@@ -71,7 +69,7 @@ The Comparison between the model from [6] and our model is shown below.
 
 <img src="images/10.png" width="550">
 
-We did some comparison on our algorithm and OpenCV. The Table and screenshots below indicated the precision on test set (unknown). Obviously, both are not ideal. However, our model is not based on features on faces, so even if there are occlusions on faces we can also detect correctly.  
+We did some comparison on our algorithm and OpenCV. The Table and screenshots below indicated the precision on test set (unknown). Obviously, both are not ideal. However, our model is not based on features on faces, so even if there are occlusions on faces we can also detect correctly.
 
 <img src="images/11.png" width="550">
 
