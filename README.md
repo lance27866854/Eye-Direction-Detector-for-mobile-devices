@@ -1,11 +1,11 @@
 # Eye Direction Detector for mobile devices
 
 ## Abstract
-Precise prediction of eye movement is quite important in CV. In addition, there are more and more HCI projects are devoted into this realm. However, the appearance-based modle is not quite robust in respond to changeable light and environments.
-
-We came upon this idea due to the inconvenience of using smart phones in some situations. E.g. people need to take off gloves to use their smart phone in winter or their hands are busy but need to use the cellphone. Actually, other body gestures like eye movements can also cast a command and people can enjoy hands-free operations.
+According to the statistical data from Apple, people open their cellphones roughly 80 times per day. This is a huge number that people actually spend approximately 400 seconds (80 times \* 4 seconds) per day to access our cellphone. To reduce the access time, considering security issues, we could not simply remove the screen lock, and instead we add some mechanisms to the lock. Specifically, we came upon the solution that combines face gesture and face ID systems to provide us a short cut to access applications. Without the time of transition from screen lock page to main page and pointing a icon, it provides not only convenience but efficacy. When people open their cellphones, their faces would be displayed with icons of applications shown. Simply moving eyes in the direction of the app intened to open, We can fast access the app without the overhead of transition.
 
 <img src="images/1.png" height="240">
+
+We focused on the part in technical level. The goal is to design a algorithm by which we could detect the eye-movement on a image. precise detection is quite difficult since the appearance-based modle is not quite robust in respond to changeable light and environments.
 
 ## Related works
 There are two main kinds of ways to detect eye movement which are Model-based detection and Appearance-based detection. Model-based process [1][2] requires instruments such as high-resolution infrared cameras which are usually not installed on cellphones. Considering Appearance-based model, there are more and more researches on CNNs and some showed the results were acceptable. Still, Appearance-models are sensitive to the change of pixel values, which makes the detection hard and inefficient and cannot put into practice.
