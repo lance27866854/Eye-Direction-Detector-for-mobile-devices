@@ -90,7 +90,7 @@ The two networks were concated and examined with test set (known and unknown). T
 (2) we built a computational process including the refinement on the region proposal mentioned in [7] and the classifier in [10]. <br>
 (3) we designed 3 different data augmentation methods and proof its efficacy by our experiments.
 
-## Download Dataset
+## Download The Dataset
 
 https://drive.google.com/file/d/1Ml1HEfVP628K-u3FS8LkobLbM3huANyj/view?usp=sharing
 
