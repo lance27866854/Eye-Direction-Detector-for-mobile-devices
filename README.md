@@ -69,7 +69,7 @@ The Comparison between the model from [6] and our model is shown below.
 
 <img src="images/10.png" width="550">
 
-The Table and screenshots below indicate the difference in terms of capability of localizing eyes between our model and the model from OpenCV on test set (unknown). Both of the models worked awkwardly on most of the testcases, which, on the one hand, represented the incapability of the models, but on the other hand standed for how throny as we detect objects in a changeable environment. However, to broadly state that the both are equally bad is not precise. Our model is not based on features on faces, unlike algorithms related to Haar-like features (OpenCV), so even if there are occlusions on faces we can also detect correctly.
+The Table and screenshots below indicate the difference in terms of capability of localizing eyes between our model and the model from OpenCV on test set (unknown). Both of the models worked awkwardly on most of the testcases, which, on the one hand, represented the incapability of the models, but on the other hand standed for how throny as we detect objects in a changeable environment. However, to broadly state that the both are equally bad is not precise. Theoretically, our model detects eyes based on the gradient points rather than features on the faces, unlike algorithms related to Haar-like features (OpenCV), so even if there are occlusions on faces we can also detect correctly.
 
 <img src="images/11.png" width="550">
 
