@@ -61,7 +61,7 @@ To enlarge our dataset and enhance the robustness of the model, we applied some 
 
 ## Experiments
 
-The experiemts ran on Intel(R) Xeon(R) CPU E5-2682 v4 @ 2.50GHz with NVIDIA GeForce GTX 1080 GPU, and we use python 3.6.8 and tensorflow 1.12.0 as the libraries.
+The experiemts were conducted on Intel(R) Xeon(R) CPU E5-2682 v4 @ 2.50GHz with NVIDIA GeForce GTX 1080 GPU, and we used python 3.6.8 and tensorflow 1.12.0 as the libraries.
 
 #### Eye Detection and Classification
 
@@ -69,7 +69,7 @@ The Comparison between the model from [6] and our model is shown below.
 
 <img src="images/10.png" width="550">
 
-We did some comparison on our algorithm and OpenCV. The Table and screenshots below indicated the precision on test set (unknown). Obviously, both are not ideal. However, our model is not based on features on faces, so even if there are occlusions on faces we can also detect correctly.
+The Table and screenshots below indicate the difference in terms of capability of localizing eyes between our model and the model from OpenCV on test set (unknown). Both of the models worked awkwardly on most of the testcases, which, on the one hand, represented the incapability of the models, but on the other hand standed for how throny as we detect objects in a changeable environment. However, to broadly state that the both are equally bad is not precise. Our model is not based on features on faces, unlike algorithms related to Haar-like features (OpenCV), so even if there are occlusions on faces we can also detect correctly.
 
 <img src="images/11.png" width="550">
 
