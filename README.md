@@ -92,6 +92,8 @@ The two networks were concated and examined with test set (known and unknown). T
 
 ## Download The Dataset
 
+> Thank Song Zhengqin (CS major student in THU) and Zhang Kezhen (CS major student in THU) for assiting in collecting and labelling the data.
+
 https://drive.google.com/file/d/1Ml1HEfVP628K-u3FS8LkobLbM3huANyj/view?usp=sharing
 
 ## References
