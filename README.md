@@ -86,13 +86,13 @@ The two networks were concated and examined with test set (known and unknown). T
 
 ## Conclusion
 
-(1) we setup a complete dataset including 249 videos from 33 people. The characteristics of our dataset are the occlusions on faces and the variable light condition. In comparason to benchmark dataset, we focus on the applicability for mobile devices. <br>
-(2) we built a computational process including the refinement on the region proposal mentioned in [7] and the classifier in [10]. <br>
-(3) we designed 5 different data augmentation methods and substantiated its efficacy through experiments.
+(1) we setup a complete dataset including 249 videos from 33 people. The images of our dataset feature occlusions on faces and variable light condition. In comparison to canonical dataset, we focus on the applicability for mobile devices. <br>
+(2) we built a computational process including the refinement on the region proposal method mentioned in [7] and the eye-direction classifier in [10]. <br>
+(3) we designed some data augmentation methods and proved them of use through experiments.
 
 ## Download The Dataset
 
-> Thank Song Zhengqin (CS major student in THU) and Zhang Kezhen (CS major student in THU) for assiting in collecting and labelling the data.
+> Thank Song Zheng-qin (CS major student in THU) and Zhang Ke-zhen (CS major student in THU) for assiting in collecting and labelling the data.
 
 https://drive.google.com/file/d/1Ml1HEfVP628K-u3FS8LkobLbM3huANyj/view?usp=sharing
 
